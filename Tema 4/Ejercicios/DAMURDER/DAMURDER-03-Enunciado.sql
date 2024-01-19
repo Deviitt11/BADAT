@@ -1,4 +1,4 @@
-
+﻿
 -- BORRADOS
 Use DAMURDER;
 GO
@@ -2330,37 +2330,50 @@ INSERT INTO Viaje VALUES
 
 --4. (Usando NOT IN) Descarta los sospechosos que no fueron de viaje.
 -- ¿Cuántos sospechosos quedan?
---DELETE FROM Sospechoso
---WHERE SospechosoID NOT IN
-	--(SELECT SospechosoID FROM Viaje);
+DELETE FROM Sospechoso
+WHERE SospechosoID NOT IN
+	(SELECT SospechosoID FROM Viaje);
 --SELECT COUNT(*) FROM Sospechoso; --484
 
 --5. Descarta los aeropuertos que no tienen código o elevación.
 -- ¿Cuántos aeropuertos quedan?
---DELETE FROM Aeropuerto
---WHERE AeropuertoCódigo IS NULL OR AeropuertoElevación IS NULL;
+DELETE FROM Aeropuerto
+WHERE AeropuertoCódigo IS NULL OR AeropuertoElevación IS NULL;
 	--SELECT COUNT(*) FROM Aeropuerto; --180
 
 --6. Descarta aquellos viajes cuya hora de embarque sea impar.
 -- ¿Cuántos viajes SE DESCARTAN?
 DELETE FROM Viaje
-WHERE DuraciónViaje%2!=0;
-	SELECT COUNT(*) FROM Viaje; --506
-
+WHERE DATEPART(HOUR, HoraEmbarque)%2=0; -- 453
+	
 --7. Descarta aquellos aeropuertos cuyo código no contenga vocales.
 -- Trabaja con el código teniendo en cuenta que podría estar escrito en mayúsculas o minúsculas
 -- ¿Cuántos aeropuertos quedan?
+-- WHERE Ciudad LIKE 'Gij[óo]n'
+DELETE FROM Aeropuerto
+WHERE LOWER(AeropuertoCódigo) NOT LIKE '%[aeiou]%';
+	--SELECT * FROM Aeropuerto; --103
 
 --8. Descarta aquellos sospechosos cuyo email NO acabe en .com
 -- ¿Cuántos sospechosos quedan? 
+DELETE FROM Sospechoso
+WHERE Email NOT LIKE '%.com'
+	--SELECT COUNT(*) FROM Sospechoso; --292
 
 --9. Descarta aquellos sospechosos que hayan nacido después del 2040 o antes de 1980
 -- ¿Cuántos sospechosos se descartan?
-
+DELETE FROM Sospechoso
+WHERE YEAR(FechaNacimiento) > 2040
+OR DATEPART(YEAR, FechaNacimiento) < 1980; --188
+	
 --10. ¿Cuántos viajes quedan?
+--SELECT COUNT(*) FROM Viaje; --56
 
 --11. Descarta aquellos aeropuertos cuyo nombre tenga más de 17 caracteres
 -- ¿Cuántos aeropuertos quedan?
+DELETE FROM Aeropuerto
+WHERE LEN(AeropuertoNombre) > 17;
+	SELECT COUNT(*) FROM Aeropuerto; --39
 
 --12. Descarta los billetes cuyo aeropuerto de Destino no está en la lista de aeropuertos.
 -- ¿Cuántos billetes quedan?
