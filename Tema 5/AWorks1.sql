@@ -133,7 +133,49 @@ SELECT ProductNumber, ListPrice - StandardCost
 AS Beneficio
 FROM SalesLT.Product;
 
--- 1.22
+/*Ejercicio 1.22.   
+(Empleando una subconsulta) Muestra todos los datos 
+del Product con mayor beneficio. No se puede buscar a 
+mano, ni emplear el valor del beneficio máximo 
+directamente en la consulta, ni ordenar los resultados 
+para luego limitar la salida a una sola fila.*/
+-- busco el product cuyo beneficio
+-- es igual al beneficio máximo
+SELECT * 
+FROM SalesLT.Product
+WHERE ListPrice-StandardCost = (
+    SELECT MAX(ListPrice-StandardCost) 
+    FROM SalesLT.Product
+);
+
+/*Ejercicio 1.23.   
+Muestra para cada categoría la suma de los beneficios 
+de sus Product.*/
+SELECT ProductCategoryID, SUM(ListPrice-StandardCost)
+FROM SalesLT.Product
+GROUP BY ProductCategoryID;
+/*La columna 'SalesLT.Product.ProductCategoryID' 
+de la lista de selección no es válida, 
+porque no está contenida en una función de 
+agregado ni en la cláusula GROUP BY.*/
+SELECT A.Name, SUM(B.ListPrice-B.StandardCost)
+FROM SalesLT.ProductCategory AS A 
+LEFT JOIN SalesLT.Product AS B
+ON A.ProductCategoryID = B.ProductCategoryID
+GROUP BY A.Name;
+
+/*Ejercicio 1.24.   
+(Empleando una subconsulta) Muestra el id de la 
+categoría más rentable (con mayor beneficio).*/
+SELECT ProductCategoryID
+FROM SalesLT.Product
+GROUP BY ProductCategoryID
+HAVING SUM(ListPrice-StandardCost)=(
+    SELECT MAX(Beneficio) 
+    FROM (SELECT SUM(ListPrice-StandardCost) AS Beneficio
+    FROM SalesLT.Product
+    GROUP BY ProductCategoryID) AS Misco
+);
 
 
 
