@@ -177,6 +177,89 @@ HAVING SUM(ListPrice-StandardCost)=(
     GROUP BY ProductCategoryID) AS Misco
 );
 
+-- 1.25
+SELECT OrderQty, UnitPrice, UnitPriceDiscount, LineTotal
+FROM SalesLT.SalesOrderDetail;
+
+-- 1.26
+SELECT OrderQty, UnitPrice, UnitPriceDiscount, LineTotal,
+OrderQty*UnitPrice*(1-UnitPriceDiscount) AS MisTotales
+FROM SalesLT.SalesOrderDetail
+WHERE ROUND(LineTotal,4)
+<> OrderQty*UnitPrice*(1-UnitPriceDiscount);
+
+-- 1.27
+SELECT MIN(OrderQty) -- UnitPriceDiscount
+FROM SalesLT.SalesOrderDetail
+WHERE UnitPriceDiscount > 0;
+
+-- 1.28
+SELECT ProductID, SUM(LineTotal)
+FROM SalesLT.SalesOrderDetail
+GROUP BY ProductID;
+
+-- 1.29
+SELECT MAX(OrderQty)
+FROM SalesLT.SalesOrderDetail
+WHERE UnitPriceDiscount=0;
+
+-- 1.30
+SELECT *
+FROM SalesLT.SalesOrderDetail
+WHERE LineTotal = (
+	SELECT MIN(LineTotal)
+	FROM SalesLT.SalesOrderDetail
+);
+
+-- 1.31
+SELECT LEFT(rowguid,1), AVG(LineTotal)
+FROM SalesLT.SalesOrderDetail
+GROUP BY LEFT(rowguid,1);
+
+-- 1.32
+SELECT rowguid
+FROM SalesLT.SalesOrderDetail
+WHERE UPPER(rowguid) LIKE '%G%';
+
+-- 1.33
+SELECT rowguid
+FROM SalesLT.SalesOrderDetail
+WHERE LOWER(rowguid) LIKE '%[g-z]%';
+
+-- 1.34
+SELECT rowguid
+FROM SalesLT.SalesOrderDetail
+WHERE rowguid NOT LIKE '%[0-9]%'
+OR UPPER(rowguid) NOT LIKE '%[A-F]%';
+
+-- 1.35
+--??
+
+-- 1.36
+SELECT SubTotal, TaxAmt, Freight, TotalDue
+FROM SalesLT.SalesOrderHeader;
+
+-- 1.37
+SELECT SubTotal, TaxAmt, Freight, TotalDue,
+SubTotal+TaxAmt+Freight+TotalDue AS TotalDeYo
+FROM SalesLT.SalesOrderHeader
+WHERE SubTotal+TaxAmt+Freight<>TotalDue;
+
+-- 1.38
+SELECT *
+FROM SalesLT.SalesOrderHeader
+WHERE ModifiedDate <> (
+	SELECT AVG(ModifiedDate)
+	FROM SalesLT.SalesOrderHeader
+);
+
+-- 1.39
+
+
+
+
+
+
 
 
 
