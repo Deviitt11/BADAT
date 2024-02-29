@@ -254,8 +254,74 @@ WHERE ModifiedDate <> (
 );
 
 -- 1.39
+SELECT Name
+FROM SalesLT.ProductCategory
+WHERE ProductCategoryID IN(
+	SELECT ParentProductCategoryID
+	FROM SalesLT.ProductCategory
+);
+
+-- 1.40
+SELECT Name
+FROM SalesLT.ProductCategory
+WHERE ProductCategoryID NOT IN(
+	SELECT ParentProductCategoryID
+	FROM SalesLT.ProductCategory
+	WHERE ParentProductCategoryID IS NOT NULL
+);
+
+-- 2.1
+SELECT A.Description, B.Culture
+FROM SalesLT.ProductDescription AS A
+JOIN SalesLT.ProductModelProductDescription AS B
+ON A.ProductDescriptionID = B.ProductDescriptionID;
+
+-- 2.2
+SELECT A.Description, B.Culture
+FROM SalesLT.ProductDescription AS A,
+SalesLT.ProductModelProductDescription AS B
+WHERE A.ProductDescriptionID = B.ProductDescriptionID;
+
+-- 2.3
+SELECT A.Name, B.Culture
+FROM SalesLT.ProductModel AS A LEFT JOIN
+SalesLT.ProductModelProductDescription AS B
+ON B.ProductModelID = A.ProductModelID;
+
+/*
+SELECT B.Name, A.Culture
+FROM SalesLT.ProductModelProductDescription AS A RIGHT JOIN
+SalesLT.ProductModel AS B
+ON B.ProductModelID = A.ProductModelID;
+*/
+
+-- 2.4
+SELECT A.Name, B.Culture
+FROM SalesLT.ProductModel AS A LEFT JOIN
+SalesLT.ProductModelProductDescription AS B
+ON B.ProductModelID = A.ProductModelID
+WHERE B.Culture IS NULL;
+
+-- 2.5
 
 
+
+
+-- 2.6
+SELECT A.Name
+FROM SalesLT.ProductModel AS A
+WHERE A.ProductModelID NOT IN
+	(SELECT ProductModelID
+	FROM SalesLT.ProductModelProductDescription
+);
+
+-- 2.7
+SELECT A.Name, B.Name
+FROM SalesLT.Product AS A
+JOIN SalesLT.ProductModel AS B
+ON A.ProductModelID = B.ProductModelID;
+
+-- 2.8
 
 
 
