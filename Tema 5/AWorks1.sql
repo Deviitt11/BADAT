@@ -322,6 +322,133 @@ JOIN SalesLT.ProductModel AS B
 ON A.ProductModelID = B.ProductModelID;
 
 -- 2.8
+/*Ejercicio 2.8.	
+Filtra los resultados del Ejercicio 2.7 para limitar los resultados a aquellos cuyo size no incluya números. Pista: se puede hacer de forma similar al Ejercicio 1.33.*/
+SELECT A.Name, B.Name, Size
+FROM SalesLT.Product AS A
+JOIN SalesLT.ProductModel AS B
+ON A.ProductModelID = B.ProductModelID
+WHERE Size NOT LIKE '%[0-9]%';
+/*Ejercicio 2.9.	
+Empleando algún JOIN, muestra el name de los ProductModel que no tienen un Product
+asociado. ¿Se podría hacer mediante producto cartesiano? */
+
+SELECT A.Name--, B.Name
+FROM SalesLT.ProductModel AS A
+LEFT JOIN SalesLT.Product AS B
+ON A.ProductModelID=B.ProductModelID
+WHERE B.ProductModelID IS NULL;
+
+SELECT A.Name--, B.Name
+FROM SalesLT.ProductModel AS A
+LEFT JOIN SalesLT.Product AS B
+ON A.ProductModelID=B.ProductModelID
+EXCEPT
+SELECT A.Name
+FROM SalesLT.ProductModel AS A
+JOIN SalesLT.Product
+ON A.ProductModelID = SalesLT.Product.ProductModelID;
+
+
+/*Ejercicio 2.10.	
+Repite el Ejercicio 2.9 mediante una subconsulta.*/
+
+SELECT Name 
+FROM SalesLT.ProductModel AS A
+WHERE A.ProductModelID NOT IN(
+	SELECT ProductModelID
+	FROM SalesLT.Product
+);
+
+-- 2.11
+SELECT NAME
+FROM SalesLT.ProductCategory
+WHERE ProductCategoryID NOT IN (
+	SELECT ProductCategoryID
+	FROM SalesLT.Product
+);
+
+-- 2.12
+SELECT A.Name, AVG(B.StandardCost) AS 'Media de cosas'
+FROM SalesLT.ProductCategory AS A
+JOIN SalesLT.Product AS B
+ON A.ParentProductCategoryID = b.ProductCategoryID
+GROUP BY A.Name;
+
+-- 2.13
+SELECT A.Name, AVG(B.StandardCost) AS 'Media de grupo'
+FROM SalesLT.ProductCategory AS A
+JOIN SalesLT.Product AS B
+ON A.ParentProductCategoryID = b.ProductCategoryID
+GROUP BY A.Name
+HAVING AVG(B.StandardCost) > (
+	SELECT AVG(StandardCost)
+	FROM SalesLT.Product
+);
+
+-- 2.14
+/*
+SELECT B.Name, MIN(A.Color), MAX(A.Color)
+FROM SalesLT.Product AS A
+JOIN SalesLT.ProductCategory AS B
+ON A.ProductCategoryID = B.ProductCategoryID
+*/
+-- esto da error
+
+SELECT B.Name, MIN(A.Color), MAX(A.Color)
+FROM SalesLT.Product AS A
+JOIN SalesLT.ProductCategory AS B
+ON A.ProductCategoryID = B.ProductCategoryID
+GROUP BY B.Name;
+
+-- 2.15
+SELECT B.Name, MIN(A.Color), MAX(A.Color)
+FROM SalesLT.Product AS A
+JOIN SalesLT.ProductCategory AS B
+ON A.ProductCategoryID = B.ProductCategoryID
+GROUP BY B.Name
+HAVING MIN(A.Color) = MAX(A.Color);
+
+-- 2.16
+SELECT B.Name, MIN(A.Color), MAX(A.Color)
+FROM SalesLT.Product AS A
+JOIN SalesLT.ProductCategory AS B
+ON A.ProductCategoryID = B.ProductCategoryID
+GROUP BY B.Name
+HAVING COUNT(DISTINCT A.Color) = 1;
+
+-- 2.17
+-- el id de categoria sale en los parent
+SELECT B.Name, SUM(A.Weight)
+FROM SalesLT.Product AS A
+JOIN SalesLT.ProductCategory AS B 
+ON A.ProductCategoryID = B.ProductCategoryID
+WHERE B.ProductCategoryID IN 
+	(SELECT ParentProductCategoryID
+	FROM SalesLT.ProductCategory
+	WHERE ParentProductCategoryID IS NOT NULL)
+GROUP BY B.Name;
+
+-- 2.18
+SELECT COUNT(A.ProductCategoryID)
+FROM SalesLT.ProductCategory AS A
+JOIN SalesLT.Product AS B 
+ON A.ProductCategoryID = B.ProductCategoryID
+GROUP BY B.ThumbnailPhotoFileName;
+
+-- 2.19
+SELECT B.ThumbnailPhotoFileName
+FROM SalesLT.ProductCategory AS A
+RIGHT JOIN SalesLT.Product AS B
+ON A.ProductCategoryID = B.ProductCategoryID
+WHERE A.ProductCategoryID IS NULL;
+
+-- 2.20
+SELECT A.SalesOrderID, A.SubTotal, SUM(B.LineTotal)
+FROM SalesLT.SalesOrderHeader AS A 
+JOIN SalesLT.SalesOrderDetail AS B
+ON A.SalesOrderID = B.SalesOrderID
+GROUP BY A.SalesOrderID, A.SubTotal;
 
 
 
