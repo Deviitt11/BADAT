@@ -665,3 +665,27 @@ FROM SalesLT.SalesOrderHeader AS A
 JOIN SalesLT.SalesOrderDetail AS B
 ON A.SalesOrderID = B.SalesOrderID
 GROUP BY A.SalesOrderID, A.SubTotal;
+
+-- 2.21
+SELECT CustomerID, SUM(LineTotal)
+FROM SalesLT.SalesOrderHeader AS A
+JOIN SalesLT.SalesOrderDetail AS B
+ON A.SalesOrderID = B.SalesOrderID
+GROUP BY CustomerID;
+
+-- 2.22
+SELECT CustomerID, SUM(LineTotal)
+FROM SalesLT.SalesOrderHeader AS A
+JOIN SalesLT.SalesOrderDetail AS B
+ON A.SalesOrderID = B.SalesOrderID
+GROUP BY CustomerID
+HAVING SUM(LineTotal) = (
+	SELECT MAX(suma)
+	FROM (
+			SELECT SUM(LineTotal) AS suma
+			FROM SalesLT.SalesOrderHeader AS A
+			JOIN SalesLT.SalesOrderDetail AS B
+			ON A.SalesOrderID = B.SalesOrderID
+			GROUP BY CustomerID)
+	AS Misco
+);
