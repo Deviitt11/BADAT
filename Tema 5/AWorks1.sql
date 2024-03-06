@@ -689,3 +689,76 @@ HAVING SUM(LineTotal) = (
 			GROUP BY CustomerID)
 	AS Misco
 );
+
+-- 2.23
+SELECT SOD.ProductID, AVG(SOH.SubTotal)
+FROM SalesLT.SalesOrderDetail AS SOD
+JOIN SalesLT.SalesOrderHeader AS SOH
+ON SOD.SalesOrderID = SOH.SalesOrderID
+GROUP BY SOD.ProductID;
+
+-- 2.24
+SELECT SOD.ProductID, AVG(SOH.SubTotal)
+FROM SalesLT.SalesOrderDetail AS SOD
+JOIN SalesLT.SalesOrderHeader AS SOH
+ON SOD.SalesOrderID = SOH.SalesOrderID
+GROUP BY SOD.ProductID
+HAVING AVG(SOH.SubTotal) > (
+	SELECT AVG(SubTotal)
+	FROM SalesLT.SalesOrderHeader
+);
+
+-- 2.25
+SELECT AddressID, CustomerID
+FROM SalesLT.Address
+CROSS JOIN SalesLT.Customer;
+-- from SalesLT.Address, SalesLT.Customer
+
+-- 2.26
+SELECT A.CustomerID, A.EmailAddress, B.CustomerID, B.EmailAddress
+FROM SalesLT.Customer AS A,
+SalesLT.Customer AS B
+WHERE A.EmailAddress = B.EmailAddress
+AND A.CustomerID <> B.CustomerID;
+
+-- 2.27
+
+-- VARIAS TABLAS
+
+-- 3.1
+SELECT C.Name, A.Name, B.Name
+FROM SalesLT.ProductCategory AS A
+JOIN SalesLT.ProductCategory AS B
+ON A.ParentProductCategoryID = B.ProductCategoryID
+JOIN SalesLT.Product AS C
+ON C.ProductCategoryID = A.ProductCategoryID;
+
+-- 3.2
+/*
+SELECT A.AddressID, B.CustomerID
+FROM SalesLT.Address AS A, SalesLT.Customer B
+CROSS JOIN SalesLT.CustomerAddress AS C
+ON A.AddressID = C.AddressID 
+AND B.CustomerID = C.CustomerID;
+*/
+-- from SalesLT.Address, SalesLT.Customer
+
+-- 3.3
+SELECT A.EmailAddress, SUM(SubTotal), COUNT(C.SalesOrderDetailID)
+FROM SalesLT.Customer AS A
+JOIN SalesLT.SalesOrderHeader AS B
+ON A.CustomerID = B.CustomerID
+JOIN SalesLT.SalesOrderDetail AS C
+ON B.SalesOrderID = C.SalesOrderID
+GROUP BY A.EmailAddress;
+
+-- 3.4
+SELECT A.EmailAddress, B.SalesOrderID, COUNT(C.ProductID)
+FROM SalesLT.Customer AS A
+JOIN SalesLT.SalesOrderHeader AS B
+ON A.CustomerID = B.CustomerID
+JOIN SalesLT.SalesOrderDetail AS C
+ON B.SalesOrderID = C.SalesOrderID
+GROUP BY A.EmailAddress, B.SalesOrderID;
+
+-- 3.5
