@@ -762,3 +762,47 @@ ON B.SalesOrderID = C.SalesOrderID
 GROUP BY A.EmailAddress, B.SalesOrderID;
 
 -- 3.5
+SELECT CustomerID, COUNT(DISTINCT ProductID)
+FROM SalesLT.SalesOrderHeader AS A
+JOIN SalesLT.SalesOrderDetail AS B
+ON A.SalesOrderID = B.SalesOrderID
+GROUP BY CustomerID;
+
+-- 3.6
+SELECT CustomerID, COUNT(DISTINCT ProductID)
+FROM SalesLT.SalesOrderHeader AS A
+JOIN SalesLT.SalesOrderDetail AS B
+ON A.SalesOrderID = B.SalesOrderID
+WHERE CustomerID%2=0
+GROUP BY CustomerID;
+
+-- 3.7
+SELECT CustomerID, ProductID, COUNT(DISTINCT ProductID)
+FROM SalesLT.SalesOrderHeader AS A
+JOIN SalesLT.SalesOrderDetail AS B
+ON A.SalesOrderID = B.SalesOrderID
+GROUP BY CustomerID, ProductID;
+
+-- 3.8
+SELECT CustomerID, ProductID, COUNT(DISTINCT ProductID)
+FROM SalesLT.SalesOrderHeader AS A
+JOIN SalesLT.SalesOrderDetail AS B
+ON A.SalesOrderID = B.SalesOrderID
+JOIN SalesLT.Customer AS C
+ON A.CustomerID = C.CustomerID
+JOIN SalesLT.Customer AS D
+ON B.ProductID = D.ProductID
+GROUP BY A.CustomerID, ProductID;
+
+-- 3.9
+SELECT CustomerID, ProductID, UnitPriceDiscount
+FROM SalesLT.SalesOrderHeader AS A
+JOIN SalesLT.SalesOrderDetail AS B
+ON A.SalesOrderID = B.SalesOrderID;
+
+-- 3.10
+SELECT CustomerID, ProductID, UnitPriceDiscount
+FROM SalesLT.SalesOrderHeader AS A
+JOIN SalesLT.SalesOrderDetail AS B
+ON A.SalesOrderID = B.SalesOrderID
+WHERE UnitPriceDiscount > 0;
