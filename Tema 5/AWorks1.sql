@@ -667,6 +667,9 @@ ON A.SalesOrderID = B.SalesOrderID
 GROUP BY A.SalesOrderID, A.SubTotal;
 
 -- 2.21
+/*
+Obtén para cada CustomerID en SalesOrderHeader, la suma de sus LineTotal
+*/
 SELECT CustomerID, SUM(LineTotal)
 FROM SalesLT.SalesOrderHeader AS A
 JOIN SalesLT.SalesOrderDetail AS B
@@ -674,6 +677,9 @@ ON A.SalesOrderID = B.SalesOrderID
 GROUP BY CustomerID;
 
 -- 2.22
+/*
+Filtra la 2.21 para obtener el CustomerID cuya suma de LineTotal es la máxima de las sumas
+*/
 SELECT CustomerID, SUM(LineTotal)
 FROM SalesLT.SalesOrderHeader AS A
 JOIN SalesLT.SalesOrderDetail AS B
@@ -691,6 +697,10 @@ HAVING SUM(LineTotal) = (
 );
 
 -- 2.23
+/*
+Obtén para cada ProductID (de SalesOrderDetail), la media de los SubTotal
+(en SalesOrderHeader) en los que aparece
+*/
 SELECT SOD.ProductID, AVG(SOH.SubTotal)
 FROM SalesLT.SalesOrderDetail AS SOD
 JOIN SalesLT.SalesOrderHeader AS SOH
@@ -698,6 +708,10 @@ ON SOD.SalesOrderID = SOH.SalesOrderID
 GROUP BY SOD.ProductID;
 
 -- 2.24
+/*
+Filtra la 2.23 para obtener solo aquellos ProductID cuya media de SubTotal supere a la media
+de SubTotal de la tabla SalesOrderHeader
+*/
 SELECT SOD.ProductID, AVG(SOH.SubTotal)
 FROM SalesLT.SalesOrderDetail AS SOD
 JOIN SalesLT.SalesOrderHeader AS SOH
@@ -709,12 +723,19 @@ HAVING AVG(SOH.SubTotal) > (
 );
 
 -- 2.25
+/*
+Obtén todas las combinaciones posibles de AddressID (en Address) con CustomerID (en Customer)
+*/
 SELECT AddressID, CustomerID
 FROM SalesLT.Address
 CROSS JOIN SalesLT.Customer;
 -- from SalesLT.Address, SalesLT.Customer
 
 -- 2.26
+/*
+De todas las combinaciones posible entre Customer, muestra aquellas cuyo EmailAddress es igual
+sin tener el mismo CustomerID
+*/
 SELECT A.CustomerID, A.EmailAddress, B.CustomerID, B.EmailAddress
 FROM SalesLT.Customer AS A,
 SalesLT.Customer AS B
@@ -726,6 +747,9 @@ AND A.CustomerID <> B.CustomerID;
 -- VARIAS TABLAS
 
 -- 3.1
+/*
+Muestra el name de cada Product junto con el name de su categoría y el name de su categoría madre
+*/
 SELECT C.Name, A.Name, B.Name
 FROM SalesLT.ProductCategory AS A
 JOIN SalesLT.ProductCategory AS B
@@ -734,6 +758,10 @@ JOIN SalesLT.Product AS C
 ON C.ProductCategoryID = A.ProductCategoryID;
 
 -- 3.2
+/*
+Usa el 2.25 combinado con la tabla CustomerAddress para mostrar cuales de todas las combinaciones posibles se
+emplean en CustomerAddress
+*/
 /*
 SELECT A.AddressID, B.CustomerID
 FROM SalesLT.Address AS A, SalesLT.Customer B
@@ -744,6 +772,10 @@ AND B.CustomerID = C.CustomerID;
 -- from SalesLT.Address, SalesLT.Customer
 
 -- 3.3
+/*
+Muestra para cada EmailAddress de Customer, la suma de su SubTotal en SalesOrderHeader y cuantos
+SalesOrderDetail asociados tiene
+*/
 SELECT A.EmailAddress, SUM(SubTotal), COUNT(C.SalesOrderDetailID)
 FROM SalesLT.Customer AS A
 JOIN SalesLT.SalesOrderHeader AS B
@@ -753,6 +785,9 @@ ON B.SalesOrderID = C.SalesOrderID
 GROUP BY A.EmailAddress;
 
 -- 3.4
+/*
+Muestra para cada EmailAddress de Customer y cada SalesOrderID de SalesOrderHeader cuantos productos se piden
+*/
 SELECT A.EmailAddress, B.SalesOrderID, COUNT(C.ProductID)
 FROM SalesLT.Customer AS A
 JOIN SalesLT.SalesOrderHeader AS B
@@ -762,6 +797,9 @@ ON B.SalesOrderID = C.SalesOrderID
 GROUP BY A.EmailAddress, B.SalesOrderID;
 
 -- 3.5
+/*
+Muestra para cada CustomerID cuantos productos distintos (distintos ProductosID) se piden
+*/
 SELECT CustomerID, COUNT(DISTINCT ProductID)
 FROM SalesLT.SalesOrderHeader AS A
 JOIN SalesLT.SalesOrderDetail AS B
@@ -769,6 +807,9 @@ ON A.SalesOrderID = B.SalesOrderID
 GROUP BY CustomerID;
 
 -- 3.6
+/*
+Filtra la 3.5 a aquellos CustomerID pares
+*/
 SELECT CustomerID, COUNT(DISTINCT ProductID)
 FROM SalesLT.SalesOrderHeader AS A
 JOIN SalesLT.SalesOrderDetail AS B
@@ -777,6 +818,10 @@ WHERE CustomerID%2=0
 GROUP BY CustomerID;
 
 -- 3.7
+/*
+Muestra para cada CustomerID cuántas veces pidió cada ProductID. Es decir, que se vea que customer fue,
+que product pidió y cuántas veces pidió ese product
+*/
 SELECT CustomerID, ProductID, COUNT(DISTINCT ProductID)
 FROM SalesLT.SalesOrderHeader AS A
 JOIN SalesLT.SalesOrderDetail AS B
@@ -784,6 +829,9 @@ ON A.SalesOrderID = B.SalesOrderID
 GROUP BY CustomerID, ProductID;
 
 -- 3.8
+/*
+Modifica la 3.7 para que se vea el nombre del customer y el nombre del product
+*/
 SELECT CustomerID, ProductID, COUNT(DISTINCT ProductID)
 FROM SalesLT.SalesOrderHeader AS A
 JOIN SalesLT.SalesOrderDetail AS B
@@ -795,14 +843,109 @@ ON B.ProductID = D.ProductID
 GROUP BY A.CustomerID, ProductID;
 
 -- 3.9
+/*
+Muestra para cada CustomerID y ProductID que haya pedido, el UnitPriceDiscount que se le haya aplicado
+*/
 SELECT CustomerID, ProductID, UnitPriceDiscount
 FROM SalesLT.SalesOrderHeader AS A
 JOIN SalesLT.SalesOrderDetail AS B
 ON A.SalesOrderID = B.SalesOrderID;
 
 -- 3.10
+/*
+Filtra la 3.9 para mostrar solo aquellos casos en los que hubo un descuento (si no fue 0)
+*/
 SELECT CustomerID, ProductID, UnitPriceDiscount
 FROM SalesLT.SalesOrderHeader AS A
 JOIN SalesLT.SalesOrderDetail AS B
 ON A.SalesOrderID = B.SalesOrderID
 WHERE UnitPriceDiscount > 0;
+
+-- 3.11
+/*Ejercicio 3.11.	
+A partir de la consulta del Ejercicio 3.9, 
+¿cómo se podría analizar si algunos Customer reciben 
+UnitPriceDiscount para algunos Product y otros 
+Customer no? Ejemplo práctico: si el customer 1 
+recibe un descuento de 0.2 para el product 1 y el 
+customer 2 tiene un valor distinto de descuento para
+el product 1, mostrar todos estos datos en conjunto. 
+Nota: 244 filas.*/
+SELECT A.SalesOrderID, A.ProductID, A.UnitPriceDiscount,
+B.UnitPriceDiscount, B.SalesOrderID
+FROM SalesLT.SalesOrderDetail AS A,
+SalesLT.SalesOrderDetail AS B
+WHERE A.ProductID = B.ProductID
+AND A.UnitPriceDiscount <> B.UnitPriceDiscount
+AND A.SalesOrderID > B.SalesOrderID -- quita repes
+ORDER BY A.UnitPriceDiscount DESC;
+
+-- 3.12
+/*Ejercicio 3.12.	
+Muestra, para cada CustomerID de Customer, 
+la suma de su SubTotal en SalesOrderHeader y 
+cuántos SalesOrderDetail asociados tiene.*/
+SELECT A.CustomerID, SUM(SubTotal), COUNT(C.SalesOrderDetailID)
+FROM SalesLT.Customer AS A
+LEFT JOIN SalesLT.SalesOrderHeader AS B
+ON A.CustomerID = B.CustomerID
+JOIN SalesLT.SalesOrderDetail AS C
+ON B.SalesOrderID = C.SalesOrderID
+GROUP BY A.CustomerID;
+
+-- 3.13
+/*Ejercicio 3.13
+Muestra, para cada EmailAddress de Customer y 
+cada SalesOrderId SalesOrderHeader 
+la suma de los OrderQty*/
+SELECT EmailAddress, B.SalesOrderID, SUM(OrderQty)
+FROM SalesLT.Customer AS A
+JOIN SalesLT.SalesOrderHeader AS B
+ON A.CustomerID = B.CustomerID
+JOIN SalesLT.SalesOrderDetail AS C
+ON B.SalesOrderID = C.SalesOrderID
+GROUP BY EmailAddress, B.SalesOrderID;
+
+-- 3.14
+/*Ejercicio 3.14
+Muestra, para cada ProductID de SalesOrderHeader,
+cuáles tienen un diferente valor de UniPrice
+que de ListPrice (en Product)*/
+SELECT A.ProductID, ListPrice, UnitPrice
+FROM SalesLT.Product AS A
+JOIN SalesLT.SalesOrderDetail AS B
+ON A.ProductID = B.ProductID
+WHERE A.ListPrice <> B.UnitPrice
+ORDER BY 2;
+
+-- 3.15
+/*Ejercicio 3.15
+Muestra ordenados de mayor a menor 
+el nombre del producto y los OrderQty asociados
+a los productos cuya categoría incluye la palabra
+'bike' (independientemente de cómo esté escrita)*/
+SELECT B.Name, C.OrderQty
+FROM SalesLT.ProductCategory AS A
+JOIN SalesLT.Product AS B
+ON A.ProductCategoryID = B.ProductCategoryID
+JOIN SalesLT.SalesOrderDetail AS C
+ON B.ProductID = C.ProductID
+WHERE LOWER(A.Name) LIKE '%bike%'
+ORDER BY OrderQty DESC;
+
+-- 3.16
+/*Ejercicio 3.16
+Muestra "la factura" del emailAddress que contiene
+kevin 5: Nombre de producto, OrderQty, UnitPrice
+UnitPriceDiscount, LineTotal
+*/
+SELECT D.Name, OrderQty, UnitPrice,
+UnitPriceDiscount, LineTotal
+FROM SalesLT.Customer AS A
+JOIN SalesLT.SalesOrderHeader AS B
+ON A.CustomerID = B.CustomerID
+JOIN SalesLT.SalesOrderDetail AS C
+ON B.SalesOrderID = C.SalesOrderID
+JOIN SalesLT.Product AS D
+ON C.ProductID = D.ProductID
+WHERE EmailAddress LIKE '%kevin%';
