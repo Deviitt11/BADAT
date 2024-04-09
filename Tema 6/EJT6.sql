@@ -141,8 +141,97 @@ BEGIN
                     DBMS_OUTPUT.PUT_LINE('Gano yo');
             END IF;
         END CASE;
-        
     END;
     
+    -- 2.1
+    BEGIN
+        DBMS_OUTPUT.ENABLE;
+        FOR i IN 1..10 LOOP
+            DBMS_OUTPUT.PUT_LINE(i);
+        END LOOP;
+    END;
+    
+    -- 0 a 100 con while
+    DECLARE
+        i INT := 0;
+    BEGIN
+      DBMS_OUTPUT.ENABLE;
+        WHILE (i<=100) LOOP
+            IF (MOD(i,2)=0) THEN
+                DBMS_OUTPUT.PUT_LINE(i);
+            END IF;
+            i := i+1;
+        END LOOP;
+    END;
+    
+    -- 2.3
+    DECLARE
+        aux INT := 3;
+    BEGIN
+        FOR i IN 1..10 LOOP
+            DBMS_OUTPUT.PUT_LINE(aux || 'x' || i || '=' || aux*i);
+        END LOOP;
+    END;
+    
+    -- 2.4
+    DECLARE
+        texto VARCHAR2(50) := 'misco y tupu';
+    BEGIN
+        FOR i IN 1..LENGTH(texto) LOOP
+            DBMS_OUTPUT.PUT_LINE(SUBSTRING(texto, i,1));
+        END LOOP;
+    END;
+    
+    -- 2.6
+    DECLARE                             
+        texto VARCHAR2(50) := 'ocsimmisco';
+        palindromo BOOL := true;
+        final INT := LENGTH(texto); --LENGTH(..)+1-i
+    BEGIN
+        FOR i IN 1..LENGTH(texto) LOOP
+            IF (SUBSTR(texto, i, 1) <> SUBSTR(texto, final, 1) THEN
+                palindromo := false;
+            END IF;
+            final := final-1;
+        END LOOP;
+        IF(palindromo) THEN
+            DBMS_OUTPUT.PUT_LINE('Sí');
+        ELSE
+            DBMS_OUTPUT.PUT_LINE('No');
+        END IF;
+    END;
+    
+    -- 
+    DECLARE
+        aux INT := 100000;
+        primo BOOLEAN := true;
+        i INT := 2;
+    BEGIN
+        while(i<aux AND primo) LOOP
+        IF(MOD(aux,i)=0) THEN
+            primo := false;
+        END IF;
+        i := i+1;
+        
+    
+    END;
+    
+    BEGIN
+        FOR fila IN(SELECT * FROM NUMEROS) LOOP
+            IF(MOD(fila.valor, 2)=0) THEN
+                INSERT INTO Numeros_pares VALUES(fila.valor);
+            END IF;
+        END LOOP;
+    END;
+    
+    CREATE TABLE Numeros(
+        VALOR INT
+        ,CONSTRAINT INT FK_Numeros PRIMARY KEY (Valor)
+    );
+    
+    CREATE TABLE Numeros_pares(
+        VALOR INT
+        ,CONSTRAINT INT FK_Numeros PRIMARY KEY (Valor)
+    );
     
 END;
