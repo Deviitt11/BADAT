@@ -234,4 +234,12 @@ BEGIN
         ,CONSTRAINT INT FK_Numeros PRIMARY KEY (Valor)
     );
     
+    -- 1.1
+    CREATE OR REPLACE FUNCTION esPar(valor int) RETURN INT AS
+    BEGIN
+        RETURN MOD(valor,2)=0;
+    END;
+    
+    
+    
 END;
