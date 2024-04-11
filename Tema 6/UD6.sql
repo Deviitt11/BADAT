@@ -111,3 +111,59 @@ BEGIN
 END;
 
 -- 3.8
+CREATE FUNCTION edad(nacimiento DATE)
+          RETURN INT
+          AS
+              actual DATE := CURRENT_DATE;
+              diferencia INT;
+          BEGIN
+              diferencia := EXTRACT(YEAR from actual)-EXTRACT(YEAR from nacimiemto);
+              -- si el mes todavía no fue: resto
+              IF (EXTRACT(MONTH from nacimiento)>EXTRACT(MONTH from actual)) THEN
+                RETURN diferencia-1;
+              END IF;
+              -- si el mes igual pero el día todavía no fue: resto
+              IF (EXTRACT(MONTH from nacimiento)=EXTRACT(MONTH from actual) 
+              AND EXTRACT(DAY from nacimiento)>EXTRACT(DAY from actual)) THEN
+                RETURN diferencia-1;
+              END IF;
+              RETURN diferencia;
+          END edad;
+/
+
+-- pruebas
+BEGIN
+    DBMS_OUTPUT.ENABLE;
+    DBMS_OUTPUT.PUT_LINE(edad('18/03/2000'));
+END;
+
+-- 3.11
+CREATE OR REPLACE FUNCTION cuenta(cadena VARCHAR2, caracter VARCHAR2)
+RETURN INT
+AS
+    contador INT := 0;
+BEGIN
+    FOR pos IN 1..LENGTH(cadena) LOOP
+    IF(SUBSTR(cadena, pos, 1)=caracter) THEN
+        contador := contador + 1;
+    END IF;
+    END LOOP;
+    RETURN contador;
+END cuenta;
+/
+
+BEGIN
+    DBMS_OUTPUT.PUT_LINE(cuenta('¿Quién es John Galt?', ' '));
+END;
+
+-- 3.12
+CREATE OR REPLACE FUNCTION alveres(cadena VARCHAR2) AS
+    caracter VARCHAR2(1); 
+BEGIN
+    FOR pos IN REVERSE 1..LENGTH(cadena) LOOP
+        caracter := SUBSTR(cadena, pos, 1);
+        DBMS_OUTPUT.PUT_LINE(caracter);
+    END LOOP;
+END;
+
+
