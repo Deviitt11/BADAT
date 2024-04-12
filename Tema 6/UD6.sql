@@ -157,13 +157,41 @@ BEGIN
 END;
 
 -- 3.12
-CREATE OR REPLACE FUNCTION alveres(cadena VARCHAR2) AS
+CREATE OR REPLACE PROCEDURE alveres(cadena VARCHAR2) AS
     caracter VARCHAR2(1); 
 BEGIN
-    FOR pos IN REVERSE 1..LENGTH(cadena) LOOP
+    FOR pos IN REVERSE 2..LENGTH(cadena) LOOP
         caracter := SUBSTR(cadena, pos, 1);
-        DBMS_OUTPUT.PUT_LINE(caracter);
+        DBMS_OUTPUT.PUT(caracter);
     END LOOP;
+    caracter := SUBSTR(cadena, 1, 1);
+    DBMS_OUTPUT.PUT_LINE(caracter);
+END;
+
+BEGIN
+    alveres('Quien es John Galt?');
+END;
+
+-- 3.13
+CREATE OR REPLACE FUNCTION YEAR(fecha DATE) RETURN INT AS
+BEGIN
+    RETURN EXTRACT(YEAR FROM fecha);
+END;
+
+SELECT YEAR('20/10/1990');
+FROM DUAL;
+
+-- 3.14
+CREATE OR REPLACE PROCEDURE cambio(precio FLOAT, pago FLOAT) AS
+    vuelta FLOAT := pago-precio;
+BEGIN
+    IF(vuelta<0) THEN
+        DBMS_OUTPUT.PUT_LINE('Qué gracioso...');
+        RETURN;
+    END IF;
+    
+    -- pagó bien
+    
 END;
 
 
