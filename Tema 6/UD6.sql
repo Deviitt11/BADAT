@@ -194,4 +194,20 @@ BEGIN
     
 END;
 
+-- 4.3
+-- PEGAR COSAS
+create or replace PROCEDURE reponer 
+(
+  ID INT
+  ,CANTIDAD INT 
+) AS 
+BEGIN
+  UPDATE inventario
+  SET Existencias = EXISTENCIAS + cantidad
+  WHERE productoid = id;
+END reponer;
+
+
+
+
 
