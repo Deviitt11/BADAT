@@ -206,8 +206,49 @@ BEGIN
   SET Existencias = EXISTENCIAS + cantidad
   WHERE productoid = id;
 END reponer;
+/
 
+create or replace PROCEDURE COMPRA
+(
 
+    IDFactura INT,
+    Nombre VARCHAR2,
+    cantidad INT,
+)
+AS
+    -- comprobar parámetros
+    facturaCorrecta INT := 0;
+    nombreCorrecto BOOLEAN := false;
+    IDProducto INT;
+BEGIN
+    -- miro si está la factura
+  SELECT COUNT(*) INTO facturaCorrecta
+  FROM factura
+  WHERE facturaID = IDFactura;
+  -- miro si está el producto
+  FOR fila IN (
+    SELECT *
+    FROM Inventario
+    ) LOOP
+    IF (fila.ProductoNombre = Nombre) THEN
+        nombreCorrecto := true;
+        IDProducto := fila.ProductoID;
+    END IF;
+    END LOOP;
+    -- si son ambos correctos: inserto
+    IF(numFacturas>0 AND nombreCorrecto) THEN
+        INSERT INTO LineaDeFactura (FacturaID, ProductoID, ProductoNombre, Cantidad)
+            VALUES(IDFactura, Nombre, cantidad);
+    END IF;
+END COMPRA;
+/
+
+BEGIN
+    compra(1, 'Oxygen', 1);
+END;
+
+SELECT *
+FROM "LINEADEFACTURA";
 
 
 
