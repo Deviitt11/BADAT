@@ -52,26 +52,6 @@ END;
 SELECT cuenta1 FROM DUAL;
 SELECT cuenta2 FROM DUAL;
 
-
-CREATE TABLE Autor (
-	dni CHAR(9) PRIMARY KEY,
-	nombre VARCHAR(20) NOT NULL,
-	apellido VARCHAR(40) NOT NULL,
-	edad INT NOT NULL CHECK(edad BETWEEN 0 AND 120),
-	departamento VARCHAR(20) NOT NULL
-);
-
-INSERT INTO Autor VALUES ('11111111H', 'David', 'Méndez', 38, 'Física');
-INSERT INTO Autor VALUES ('22222222J', 'Spenser', 'Checchi', 56, 'Marketing');
-INSERT INTO Autor VALUES ('33333333P', 'Hally', 'Ribchester', 28, 'Ventas');
-INSERT INTO Autor VALUES ('44444444A', 'Roch', 'Cuttings', 24, 'Física');
-INSERT INTO Autor VALUES ('55555555K', 'Benjie', 'Dougher', 53, 'Marketing');
-INSERT INTO Autor VALUES ('66666666Q', 'Emmanuel', 'Hatzar', 21, 'Física');
-INSERT INTO Autor VALUES ('77777777B', 'Adela', 'Buessen', 44, 'Ventas');
-INSERT INTO Autor VALUES ('88888888Y', 'Vittoria', 'Iveson', 20, 'Administración');
-INSERT INTO Autor VALUES ('99999999R', 'Carola', 'Kieff', 42, 'Física');
-INSERT INTO Autor VALUES ('12345678Z', 'Binnie', 'Ianitti', 54, 'Ventas');
-
 -- 3.5
 CREATE OR REPLACE PROCEDURE ej3_5(departamento VARCHAR2) AS
     BEGIN
@@ -111,24 +91,23 @@ BEGIN
 END;
 
 -- 3.8
-CREATE FUNCTION edad(nacimiento DATE)
-          RETURN INT
-          AS
-              actual DATE := CURRENT_DATE;
-              diferencia INT;
-          BEGIN
-              diferencia := EXTRACT(YEAR from actual)-EXTRACT(YEAR from nacimiemto);
-              -- si el mes todavía no fue: resto
-              IF (EXTRACT(MONTH from nacimiento)>EXTRACT(MONTH from actual)) THEN
-                RETURN diferencia-1;
-              END IF;
-              -- si el mes igual pero el día todavía no fue: resto
-              IF (EXTRACT(MONTH from nacimiento)=EXTRACT(MONTH from actual) 
-              AND EXTRACT(DAY from nacimiento)>EXTRACT(DAY from actual)) THEN
-                RETURN diferencia-1;
-              END IF;
-              RETURN diferencia;
-          END edad;
+CREATE FUNCTION edad(nacimiento DATE) RETURN INT AS
+    actual DATE := CURRENT_DATE;
+    diferencia INT;
+BEGIN
+    diferencia := EXTRACT(YEAR from actual)-EXTRACT(YEAR from nacimiemto);
+    -- si el mes todavía no fue: resto
+    IF (EXTRACT(MONTH from nacimiento)>EXTRACT(MONTH from actual)) THEN
+        RETURN diferencia-1;
+    END IF;
+              
+    -- si el mes igual pero el día todavía no fue: resto
+    IF (EXTRACT(MONTH from nacimiento)=EXTRACT(MONTH from actual) 
+    AND EXTRACT(DAY from nacimiento)>EXTRACT(DAY from actual)) THEN
+        RETURN diferencia-1;
+    END IF;
+    RETURN diferencia;
+END edad;
 /
 
 -- pruebas
