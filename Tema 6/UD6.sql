@@ -229,5 +229,12 @@ END;
 SELECT *
 FROM "LINEADEFACTURA";
 
+SELECT * FROM Factura;
+
+SELECT * FROM Inventario;
+
+-- factura 1 compra 10 de de enviro
+EXECUTE compra(1, 'Enviro', 10);
+
 
 

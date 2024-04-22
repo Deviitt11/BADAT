@@ -111,12 +111,23 @@ CREATE OR REPLACE PROCEDURE matricula (
     nombrecompleto VARCHAR2,
     codigoasignatura VARCHAR2
 ) AS
+    auxEstudianteID number; -- auxiliares para almacenar datos
+    auxAsignaturaID number;
     year INT := EXTRACT(YEAR FROM CURRENT_TIMESTAMP);
 BEGIN
 
+    -- consulta a pinchu
+    SELECT estudianteID into auxEstudianteID
+    FROM estudiante -- empalmo con tabla estudiante mediante el nombre
+    WHERE nombrecompleto = estudiantenombrecompleto;
+    
+    SELECT asignaturaID into auxAsignaturaID
+    FROM asignatura -- empalmo con tabla asignatura mediante el codigo
+    WHERE codigoasignatura = asignaturacodigo;
+    
     -- q se inserta aparte de idasignatura y el año? 
-    INSERT INTO EstudianteAsignatura (asignaturaid, año) 
-    VALUES (codigo_asignatura, year);
+    INSERT INTO EstudianteAsignatura (estudianteid, asignaturaid, año) 
+    VALUES (auxEstudianteID, auxAsignaturaID, year);
 END;
 /
 
@@ -163,6 +174,16 @@ BEGIN
 END;
 /
 
+-- 3.d PARA PROBAR LOS INSERTS Y DELETES
+CLEAR SCREEN
+EXECUTE matricula('Tony Stark', 'BADAT.0484');
+EXECUTE matricula('Natasha Romanoff', 'PROG.0485');
+
+SELECT * FROM LogEstudiante;
+EXECUTE log_estudiante('Tony Stark');
+
+DELETE FROM EstudianteAsignatura;
+EXECUTE log_estudiante('Natasha Romanoff');
 
 
 
