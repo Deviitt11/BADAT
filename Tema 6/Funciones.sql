@@ -1,3 +1,7 @@
+CREATE USER C##Tema_6 IDENTIFIED BY admin;
+GRANT ALL PRIVILEGES TO C##Tema_6;
+
+
 CLEAR SCREEN -- limpia salida de script (consultas...)
 BEGIN
     BEGIN

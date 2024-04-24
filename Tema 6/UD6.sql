@@ -1,3 +1,4 @@
+-- 3.2
 CREATE OR REPLACE FUNCTION esPar(valor int) RETURN INT AS
 BEGIN
 DBMS_OUTPUT.ENABLE;
@@ -30,6 +31,7 @@ END;
 SELECT Valor, modulof(valor)
 FROM NUMEROS;
 
+-- 3.3
 CREATE OR REPLACE FUNCTION cuenta1 RETURN INT AS
     cuenta INT;
 BEGIN
@@ -123,9 +125,9 @@ AS
     contador INT := 0;
 BEGIN
     FOR pos IN 1..LENGTH(cadena) LOOP
-    IF(SUBSTR(cadena, pos, 1)=caracter) THEN
-        contador := contador + 1;
-    END IF;
+        IF(SUBSTR(cadena, pos, 1)=caracter) THEN
+            contador := contador + 1;
+        END IF;
     END LOOP;
     RETURN contador;
 END cuenta;
@@ -164,27 +166,26 @@ FROM DUAL;
 CREATE OR REPLACE PROCEDURE cambio(precio FLOAT, pago FLOAT) AS
     vuelta FLOAT := pago-precio;
 BEGIN
+    DBMS_OUTPUT.ENABLE;
     IF(vuelta<0) THEN
         DBMS_OUTPUT.PUT_LINE('Qué gracioso...');
-        RETURN;
+        RETURN 0;
+    ELSE 
+        RETURN vuelta;
     END IF;
-    
-    -- pagó bien
-    
 END;
 
 -- 4.3
 -- PEGAR COSAS
-create or replace PROCEDURE reponer 
-(
-  ID INT
-  ,CANTIDAD INT 
-) AS 
+CREATE OR REPLACE PROCEDURE reponer (
+    id INT,
+    cantidad INT
+) AS
 BEGIN
-  UPDATE inventario
-  SET Existencias = EXISTENCIAS + cantidad
-  WHERE productoid = id;
-END reponer;
+    UPDATE inventario
+    SET Existencias := Existencias + cantidad
+    WHERE productoid = id;
+END;
 /
 
 create or replace PROCEDURE COMPRA
@@ -236,5 +237,133 @@ SELECT * FROM Inventario;
 -- factura 1 compra 10 de de enviro
 EXECUTE compra(1, 'Enviro', 10);
 
+-- 4.1
+create or replace TRIGGER actualizaDiscos
+AFTER DELETE OR INSERT OR UPDATE on Canción
+FOR EACH ROW
+DECLARE
+    suma FLOAT;
+BEGIN
+    IF (DELETING) THEN
+        -- borro canción y bajo tiempo
+        UPDATE Disco
+        SET disco.discoduración = disco.discoduración - :OLD.canciónduración
+        WHERE disco.discoid = :OLD.discoID;
+    ELSIF(INSERTING) THEN
+        UPDATE Disco
+        SET disco.discoduración = disco.discoduración + :NEW.canciónduración
+        WHERE disco.discoid = :NEW.discoID;
+    ELSE
+        -- descuento del viejo
+        UPDATE Disco
+        SET disco.discoduración = disco.discoduración - :OLD.canciónduración
+        WHERE disco.discoid = :OLD.discoID;
+
+        -- sumo en el nuevo
+        UPDATE Disco
+        SET disco.discoduración = disco.discoduración + :NEW.canciónduración
+        WHERE disco.discoid = :NEW.discoID;
+    END IF;
+END;
+
+CREATE OR REPLACE TRIGGER completa_log
+BEFORE INSERT ON LogEstudiante
+FOR EACH ROW
+BEGIN
+    :NEW.Instante := CURRENT_TIMESTAMP;
+END;
+
+CREATE OR REPLACE PROCEDURE log_estudiante(nombre VARCHAR2)
+AS
+    encontrado BOOLEAN := false;
+BEGIN
+    DBMS_OUTPUT.ENABLE;
+    FOR fila IN (
+    
+        SELECT EstudianteNombreCompleto, Accion
+        FROM LogEstudiante
+        WHERE EstudianteNombreCompleto = nombre
+        ) LOOP
+        encontrado := true;
+        DBMS_OUTPUT.PUT_LINE(fila.EstudianteNombreCompleto || ' ' || fila.Accion);
+    END LOOP;
+    
+    IF NOT encontrado THEN
+        DBMS_OUTPUT.PUT_LINE('NO EXISTE' || nombre);
+    END IF;
+END;
+/
+
+CREATE OR REPLACE FUNCTION mayor_de_edad(edad INT)
+RETURN BOOLEAN AS
+BEGIN
+    RETURN edad >= 18;
+END;
+/
+
+CREATE OR REPLACE TRIGGER completa_estudiante
+BEFORE INSERT ON Estudiante
+BEGIN
+    IF(mayor_de_edad(:NEW.Edad)) THEN
+        :NEW.MayorDeEdad := 1;
+    ELSE
+        :NEW.MayorDeEdad := 0;
+    END IF;
+END;
+/
+
+CREATE OR REPLACE TRIGGER estudiante_log_a
+AFTER INSERT OR DELETE ON Estudiante
+FOR EACH ROW
+BEGIN
+    IF INSERTING THEN
+        INSERT INTO LogEstudiante(estudiantenombrecompleto, acción)
+        VALUES (:NEW.estudiantenombrecompleto, 'se da de alta');
+    ELSIF DELETING THEN
+        INSERT INTO LogEstudiante(estudiantenombrecompleto, acción)
+        VALUES (:OLD.estudiantenombrecompleto, 'se da de alta');
+    END IF;
+END;
+/
+
+CREATE OR REPLACE PROCEDURE matricula(nombre VARCHAR2, codigo VARCHAR2)
+AS
+    estudianteIDvar INT := 0;
+    asignaturaIDvar INT := 0;
+BEGIN
+    DBMS_OUTPUT.ENABLE;
+    
+    SELECT estudianteid INTO estudianteidvar 
+    FROM estudiante
+    WHERE estudiantenombrecompleto = nombre;
+    
+    SELECT asignatura INTO asignaturaidvar
+    FROM asignatura
+    WHERE asignaturacodigo = codigo;
+    
+    INSERT INTO EstudianteAsignatura
+    VALUE (estudianteidvar, asignaturaidvar, EXTRACT(YEAR FROM CURRENT_DATE));
+END;
+/
 
 
+CREATE OR REPLACE PROCEDURE desmatricula(nombre VARCHAR2, codigo VARCHAR2)
+AS
+    estudianteIDvar INT := 0;
+    asignaturaIDvar INT := 0;
+BEGIN
+    DBMS_OUTPUT.ENABLE;
+    
+    SELECT estudianteid INTO estudianteidvar
+    FROM estudiante
+    WHERE estudiantenombrecompleto = nombre;
+    
+    SELECT asignaturaid INTO asignaturaidvar
+    FROM asignatura
+    WHERE asignaturacodigo = codigo;
+    
+    DELETE INTO EstudianteAsignatura
+    WHERE estudianteid = estudianteidvar AND asignaturaid = asignaturaidvar;
+    DBMS_OUTPUT.PUT_LINE('TO CORRECTO');
+END;
+/

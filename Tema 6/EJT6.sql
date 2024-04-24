@@ -13,6 +13,20 @@ BEGIN
         END IF;
     END;
     
+    -- 1.2
+    DECLARE
+        
+        edad INT := 16;
+    BEGIN
+    
+        IF edad >= 18 THEN
+            DBMS_OUTPUT.PUT_LINE('Puede votar');
+        ELSE
+            DBMS_OUTPUT.PUT_LINE('No puede votar');
+        END IF;
+        
+    END;
+    
     -- 1.3
     DECLARE
         var INT := 15;
