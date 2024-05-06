@@ -77,9 +77,32 @@ BEGIN
         DBMS_OUTPUT.PUT_LINE('c1 MENOR');
     END IF;
 END;
+/
 
-CREATE TABLE Círculo_table OF Círculo_type;
+DECLARE
+    c1 círculo_type := NEW Círculo_type(5);
+    c2 círculo_type := NEW Círculo_type(2, 'Azul');
+BEGIN
+    DBMS_OUTPUT.ENABLE;
+   -- CREATE TABLE circulo_table of círculo_type;
+    DELETE FROM Circulo_table;
+    INSERT INTO Circulo_table VALUES (c1);
+    INSERT INTO Circulo_table VALUES (c2);
+    c1.radio := -2;
+    --SELECT * FROM círculo_table;
+    DBMS_OUTPUT.PUT_LINE(c1.radio);
+END;
+/
 
-    INSERT INTO Círculo_table
-    VALUES (c1);
-    
+-- 1.2
+DECLARE
+    v1 vehiculo_type := NEW vehiculo_type('1234');
+    v2 vehiculo_type := NEW vehiculo_type('5678');
+BEGIN
+    -- velocidad 0?
+    DBMS_OUTPUT.PUT_LINE(v1.velocidad);
+    v1.acelera(5,2);
+    DBMS_OUTPUT.PUT_LINE(v1.compara(v2));
+END;
+
+
