@@ -98,11 +98,32 @@ END;
 DECLARE
     v1 vehiculo_type := NEW vehiculo_type('1234');
     v2 vehiculo_type := NEW vehiculo_type('5678');
+    valor FLOAT := 5.2;
+    vehiculos vehiculos_varray := new vehiculos_varray();
 BEGIN
     -- velocidad 0?
     DBMS_OUTPUT.PUT_LINE(v1.velocidad);
-    v1.acelera(5,2);
+    v1.acelera(15);
+    v2.frena(10);
     DBMS_OUTPUT.PUT_LINE(v1.compara(v2));
+    
+    DBMS_OUTPUT.PUT_LINE(vehiculos.LIMIT()); -- 2 ELEMENTOS MÁX
+    DBMS_OUTPUT.PUT_LINE(vehiculos.COUNT()); -- 0 posiciones desbloqueadas
+    vehiculos.EXTEND(); -- desbloqueo la 1ª posi
+    
+    -- indexación comienza en 1
+    vehiculos(1) := v1; -- primer vehículo
+    
+    -- meter otro vehiculo
+    vehiculos.EXTEND();
+    vehiculos(2) := v2;
+    
+    -- recorrer un varray
+    FOR i IN 1..vehiculos.LIMIT() LOOP
+        DBMS_OUTPUT.PUT_LINE(vehiculos(1).velocidad);
+    END LOOP;
+    
 END;
+
 
 
