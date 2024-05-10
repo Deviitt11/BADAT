@@ -125,5 +125,66 @@ BEGIN
     
 END;
 
+-- 1.4
+CREATE OR REPLACE TYPE BOLA_TYPE AS OBJECT 
+( --atributos
+    nombre VARCHAR2(50)
+    ,velocidad int
+    --METODOS
+    ,MEMBER FUNCTION quieta RETURN BOOLEAN
+    ,MEMBER PROCEDURE muestra(SELF IN OUT bola_type)
+    ,MEMBER PROCEDURE golpea(SELF IN OUT bola_type, otra bola_type)
+    --CONSTRUCTORES
+    ,CONSTRUCTOR FUNCTION bola_type(nombre VARCHAR2, velocidad INT)
+    return self as result
+    ,CONSTRUCTOR FUNCTION bola_type(nombre VARCHAR2)
+    return self as result
+)
+/
+
+create or replace type body bola_type as
+ 
+  member function quieta return boolean as
+  begin
+    RETURN SELF.velocidad=0;
+  end quieta;
+ 
+  member procedure muestra(self in out bola_type) as
+  begin
+    -- TAREA: Se necesita implantación para PROCEDURE BOLA_TYPE.muestra
+    null;
+  end muestra;
+ 
+  member procedure golpea(self in out bola_type, otro bola_type) as
+  begin
+    -- TAREA: Se necesita implantación para PROCEDURE BOLA_TYPE.golpea
+    null;
+  end golpea;
+ 
+  constructor function bola_type(nombre varchar2, velocidad int)
+    return self as result as
+  begin
+    -- TAREA: Se necesita implantación para FUNCTION BOLA_TYPE.bola_type
+    return null;
+  end bola_type;
+ 
+  constructor function bola_type(nombre varchar2)
+    return self as result as
+  begin
+    -- TAREA: Se necesita implantación para FUNCTION BOLA_TYPE.bola_type
+    return null;
+  end bola_type;
+ 
+end;
+/
+
+DECLARE
+    b1 bola_type := NEW bola_type('Frenando', 20);
+    b2 bola_type := NEW bola_type('Alonso');
+BEGIN
+    b1.golpea(b2);
+END;
+/
+
 
 

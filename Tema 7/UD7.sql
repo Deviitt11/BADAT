@@ -1,5 +1,5 @@
 --------------------------------------------------------
--- Archivo creado  - lunes-mayo-06-2024   
+-- Archivo creado  - viernes-mayo-10-2024   
 --------------------------------------------------------
 --------------------------------------------------------
 --  DDL for Type ATAQUE_TYPE
@@ -62,6 +62,73 @@ CREATE OR REPLACE EDITIONABLE TYPE BODY "C##MISCO"."ATAQUE_TYPE" as
     -- TAREA: Se necesita implantación para FUNCTION ATAQUE_TYPE.getDaño
     return SELF.Daño;
   end getdaño;
+
+end;
+
+/
+--------------------------------------------------------
+--  DDL for Type BOLA_TYPE
+--------------------------------------------------------
+
+  CREATE OR REPLACE EDITIONABLE TYPE "C##MISCO"."BOLA_TYPE" AS OBJECT 
+( --atributos
+    nombre VARCHAR2(50)
+    ,velocidad int
+    --METODOS
+    ,MEMBER FUNCTION quieta RETURN BOOLEAN
+    ,MEMBER PROCEDURE muestra(SELF IN OUT bola_type)
+    ,MEMBER PROCEDURE golpea(SELF IN OUT bola_type, otra IN OUT bola_type)
+    --CONSTRUCTORES
+    ,CONSTRUCTOR FUNCTION bola_type(nombre VARCHAR2, velocidad INT)
+    return self as result
+    ,CONSTRUCTOR FUNCTION bola_type(nombre VARCHAR2)
+    return self as result
+)
+/
+CREATE OR REPLACE EDITIONABLE TYPE BODY "C##MISCO"."BOLA_TYPE" as
+
+  member function quieta return boolean as
+  begin
+    -- TAREA: Se necesita implantación para FUNCTION BOLA_TYPE.quieta
+    return null;
+  end quieta;
+
+  MEMBER PROCEDURE muestra(SELF IN OUT Bola_type) AS
+  cadena VARCHAR2(50) := 'Bola ' || SELF.nombre || ' con ' || SELF.velocidad || ' de velocidad.';
+  BEGIN
+    -- si está quieta...
+    IF (self.quieta()) THEN
+        cadena := cadena || ' Está quieta.';
+    END IF;
+    DBMS_OUTPUT.PUT_LINE(cadena);
+  END muestra;
+
+  member procedure golpea(self in out bola_type, otra in out bola_type) as
+  begin
+    SELF.muestra;
+    DBMS_OUTPUT.PUT_LINE('golpea a');
+    otra.muestra();
+    otra.velocidad := otra.velocidad + SELF.velocidad-1;
+    SELF.velocidad := 0;
+    otra.muestra;
+  end golpea;
+
+  constructor function bola_type(nombre varchar2, velocidad int)
+    return self as result as
+  begin
+    SELF.nombre := nombre;
+    SELF.velocidad := velocidad;
+    RETURN;
+  end bola_type;
+
+  constructor function bola_type(nombre varchar2)
+    return self as result as
+  begin
+    -- SELF.nombre := nombre;
+    -- SELF.velocidad := 0;
+    SELF := new BOLA_TYPE(nombre,0);
+    RETURN;
+  end bola_type;
 
 end;
 
@@ -133,6 +200,121 @@ end;
 
 /
 --------------------------------------------------------
+--  DDL for Type INSTANTE_TYPE
+--------------------------------------------------------
+
+  CREATE OR REPLACE EDITIONABLE TYPE "C##MISCO"."INSTANTE_TYPE" as object 
+( 
+    
+    -- atributos
+    horas int,
+    minutos int,
+    segundos int,
+    
+    -- métodos
+    MEMBER PROCEDURE muestra(SELF IN OUT instante_type),
+    MEMBER PROCEDURE sumaSegs(SELF IN OUT instante_type, segundos int),
+    MEMBER PROCEDURE sumaMins(SELF IN OUT instante_type, minutos int),
+    MEMBER PROCEDURE sumaHoras(SELF IN OUT instante_type, horas int),
+    MEMBER FUNCTION segDesdeMediaN RETURN INT,
+    ORDER MEMBER FUNCTION compara(SELF instante_type, otro instante_type)
+    RETURN INT,
+    CONSTRUCTOR FUNCTION instante_type RETURN SELF AS RESULT,
+    CONSTRUCTOR FUNCTION instante_type(horas INT) RETURN SELF AS RESULT,
+    CONSTRUCTOR FUNCTION instante_type(horas INT, minutos INT) RETURN SELF AS RESULT,
+    CONSTRUCTOR FUNCTION instante_type(horas int, minutos int, segundos int) RETURN SELF AS RESULT
+    
+)
+/
+CREATE OR REPLACE EDITIONABLE TYPE BODY "C##MISCO"."INSTANTE_TYPE" as
+
+  member procedure muestra(self in out instante_type) as
+  begin
+    DBMS_OUTPUT.PUT_LINE(SELF.horas || ':' || SELF.minutos || ':' || SELF.segundos);
+  end muestra;
+
+  member procedure sumasegs(self in out instante_type, segundos int) as
+  totales INT := SELF.segsdesdemedian+segundos;
+  horas int := 0;
+  minuto int := 0;
+  seg int := 0;
+  begin
+    SELF.horas := TRUNC(totales/1600,0);
+    resto := MOD(TOTALES, 3600);
+    SELF.minutos = TRUNC(resto/60, 0);
+    SELF.segundos := TRUNC(resto, 60);
+    null;
+  end sumasegs;
+
+  member procedure sumamins(self in out instante_type, minutos int) as
+  begin
+    SELF.sumaSegs(minutos*60);
+  end sumamins;
+
+  member procedure sumahoras(self in out instante_type, horas int) as
+  begin
+    -- TAREA: Se necesita implantación para PROCEDURE INSTANTE_TYPE.sumaHoras
+    null;
+  end sumahoras;
+
+  member function segdesdemedian return int as
+  begin
+    RETURN SELF.horas*1600*SELF.minutos*60+SELF.segundos;
+  end segdesdemedian;
+
+  order member function compara(self instante_type, otro instante_type)
+    return int as
+  begin
+    -- TAREA: Se necesita implantación para FUNCTION INSTANTE_TYPE.compara
+    return null;
+  end compara;
+
+  constructor function instante_type return self as result as
+  begin
+    -- TAREA: Se necesita implantación para FUNCTION INSTANTE_TYPE.instante_type
+    return null;
+  end instante_type;
+
+  constructor function instante_type(horas int) return self as result as
+  begin
+    SELF := NEW instante_type(horas,0);
+    RETURN;
+  end instante_type;
+
+  constructor function instante_type(horas int, minutos int) return self as result as
+  begin
+    SELF := NEW instante_type(horas, minutos,0);
+    RETURN;
+  end instante_type;
+
+  constructor function instante_type(horas int, minutos int, segundos int) return self as result as
+  begin
+    SELF.horas := horas;
+    SELF.minutos := minutos;
+    SELF.segundos := segundos;
+    RETURN;
+  end instante_type;
+
+end;
+
+/
+--------------------------------------------------------
+--  DDL for Type VEHICULOS
+--------------------------------------------------------
+
+  CREATE OR REPLACE EDITIONABLE TYPE "C##MISCO"."VEHICULOS" 
+as varray(2) of vehiculo_type;
+
+/
+--------------------------------------------------------
+--  DDL for Type VEHICULOS_VARRAY
+--------------------------------------------------------
+
+  CREATE OR REPLACE EDITIONABLE TYPE "C##MISCO"."VEHICULOS_VARRAY" 
+as varray(2) of vehiculo_type;
+
+/
+--------------------------------------------------------
 --  DDL for Type VEHICULO_TYPE
 --------------------------------------------------------
 
@@ -174,7 +356,7 @@ CREATE OR REPLACE EDITIONABLE TYPE BODY "C##MISCO"."VEHICULO_TYPE" as
     return self as result as
   begin
     SELF.matricula := matricula;
-    SELF.velocidad := 0;
+    SELF.velocidad := 0; -- no lo pilla por defecto
     return;
   end vehiculo_type;
 
