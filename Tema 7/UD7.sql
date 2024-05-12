@@ -5,6 +5,9 @@
 --  DDL for Type ATAQUE_TYPE
 --------------------------------------------------------
 
+CREATE USER C##Misco IDENTIFIED BY admin;
+GRANT ALL PRIVILEGES TO C##Misco;
+
   CREATE OR REPLACE EDITIONABLE TYPE "C##MISCO"."ATAQUE_TYPE" as object 
 ( 
     -- atributos cuentan como públicos (como campos en una tabla)
@@ -241,9 +244,8 @@ CREATE OR REPLACE EDITIONABLE TYPE BODY "C##MISCO"."INSTANTE_TYPE" as
   begin
     SELF.horas := TRUNC(totales/1600,0);
     resto := MOD(TOTALES, 3600);
-    SELF.minutos = TRUNC(resto/60, 0);
+    SELF.minutos := TRUNC(resto/60, 0);
     SELF.segundos := TRUNC(resto, 60);
-    null;
   end sumasegs;
 
   member procedure sumamins(self in out instante_type, minutos int) as
