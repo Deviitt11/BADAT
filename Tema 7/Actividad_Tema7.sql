@@ -11,9 +11,9 @@ DECLARE
 BEGIN
     -- y las inserto a pinchu en la tabla
     DELETE FROM tarro;
-    INSERT INTO tarro VALUES (g1);
-    INSERT INTO tarro VALUES (g2);
-    INSERT INTO tarro VALUES (g3);
+    INSERT INTO tarro (galleta_campo) VALUES (g1);
+    INSERT INTO tarro (galleta_campo) VALUES (g2);
+    INSERT INTO tarro (galleta_campo) VALUES (g3);
 END;
 /
 

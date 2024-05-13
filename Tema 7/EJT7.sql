@@ -186,5 +186,28 @@ BEGIN
 END;
 /
 
+-- EJ 1.5
+CREATE TYPE v_varchar IS VARRAY(50) OF VARCHAR2(50);
+
+DECLARE
+    v v_varchar := NEW v_varchar(); -- ('a', 'b', 'c');
+    s seleccionador_type; -- := NEW seleccionador_type(v);
+BEGIN
+    v.EXTEND(); v(1) := 'a';
+    v.EXTEND(); v(2) := 'b';
+    v.EXTEND(); v(3) := 'c';
+    v.EXTEND();
+    s := NEW seleccionador_type(v);
+    DBMS_OUTPUT.PUT_LINE(s.respuesta());
+    DBMS_OUTPUT.PUT_LINE(s.respuesta());
+    DBMS_OUTPUT.PUT_LINE(s.respuesta());
+END;
+/
+
+DECLARE
+    p password_type := new password_type('ABC');
+BEGIN
+    DBMS_OUTPUT.PUT_LINE(p.cuentacaracteresnoespeciales);
+END;
 
 
