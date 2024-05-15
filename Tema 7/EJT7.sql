@@ -210,4 +210,11 @@ BEGIN
     DBMS_OUTPUT.PUT_LINE(p.cuentacaracteresnoespeciales);
 END;
 
+DECLARE
+    p1 password_type := new password_type('1234');
+BEGIN
+    DBMS_OUTPUT.PUT_LINE(p1.essegura);
+    DBMS_OUTPUT.PUT_LINE(password_type.generador());
+END;
+
 
