@@ -1,5 +1,5 @@
 --------------------------------------------------------
--- Archivo creado  - lunes-mayo-13-2024   
+-- Archivo creado  - lunes-mayo-20-2024   
 --------------------------------------------------------
 --------------------------------------------------------
 --  DDL for Type ATAQUE_TYPE
@@ -122,6 +122,70 @@ end;
 
 /
 --------------------------------------------------------
+--  DDL for Type CAFETERA_TYPE
+--------------------------------------------------------
+
+  CREATE OR REPLACE EDITIONABLE TYPE "C##MISCO"."CAFETERA_TYPE" as object 
+( 
+
+    --  atributos
+    maxima INT,
+    actual INT,
+    
+    -- metodos
+    MEMBER PROCEDURE muestra(SELF IN OUT cafetera_type),
+    MEMBER PROCEDURE linea(SELF IN OUT cafetera_type),
+    MEMBER FUNCTION servirTaza RETURN INT,
+    
+    -- constructores
+    CONSTRUCTOR FUNCTION cafetera_type(maxima INT)
+    RETURN SELF AS RESULT,
+    CONSTRUCTOR FUNCTION cafetera_type
+    RETURN SELF AS RESULT
+)
+/
+CREATE OR REPLACE EDITIONABLE TYPE BODY "C##MISCO"."CAFETERA_TYPE" as
+
+  member procedure muestra(self in out cafetera_type) as
+  begin
+    DBMS_OUTPUT.PUT_LINE('Quedan ' || SELF.actual || '/' || SELF.maxima || ' ml');
+  end muestra;
+
+  member procedure linea(self in out cafetera_type) as
+  begin
+    SELF.actual := SELF.maxima;
+  end linea;
+
+  member function servirtaza return int as
+    cantidad INT := 0;
+  begin
+    IF (SELF.actual >= 0) THEN
+        cantidad := 30;
+    ELSE
+        cantidad := SELF.actual;
+    END IF;
+    SELF.actual := SELF.actual - cantidad;
+    RETURN cantidad;
+  end servirtaza;
+
+  constructor function cafetera_type(maxima int)
+    return self as result as
+  begin
+    -- TAREA: Se necesita implantación para FUNCTION CAFETERA_TYPE.cafetera_type
+    return null;
+  end cafetera_type;
+
+  constructor function cafetera_type
+    return self as result as
+  begin
+    -- TAREA: Se necesita implantación para FUNCTION CAFETERA_TYPE.cafetera_type
+    return null;
+  end cafetera_type;
+
+end;
+
+/
+--------------------------------------------------------
 --  DDL for Type CÍRCULO_TYPE
 --------------------------------------------------------
 
@@ -182,6 +246,63 @@ CREATE OR REPLACE EDITIONABLE TYPE BODY "C##MISCO"."CÍRCULO_TYPE" as
   begin
     SELF := NEW círculo_type(radio, 'Azul');
   end círculo_type;
+
+end;
+
+/
+--------------------------------------------------------
+--  DDL for Type CUENTA_TYPE
+--------------------------------------------------------
+
+  CREATE OR REPLACE EDITIONABLE TYPE "C##MISCO"."CUENTA_TYPE" as object 
+( 
+    
+    id INT,
+    saldo FLOAT,
+    
+    MEMBER PROCEDURE muestra(SELF IN OUT cuenta_type),
+    MEMBER PROCEDURE ingresa(SELF IN OUT cuenta_type, cantidad FLOAT),
+    MEMBER PROCEDURE retira(SELF IN OUT cuenta_type, cantidad FLOAT),
+    MEMBER PROCEDURE transferencia(SELF IN OUT cuenta_Type, otra cuenta_type, cantidad FLOAT),
+    CONSTRUCTOR FUNCTION cuenta_type(id INT) RETURN SELF AS RESULT,
+    CONSTRUCTOR FUNCTION cuenta_type(id INT, saldo FLOAT) RETURN SELF AS RESULT
+)
+/
+CREATE OR REPLACE EDITIONABLE TYPE BODY "C##MISCO"."CUENTA_TYPE" as
+
+  member procedure muestra(self in out cuenta_type) as
+  begin
+    SYSO.println('' || SELF.id || ' con ' || SELF.saldo || '€');
+  end muestra;
+
+  member procedure ingresa(self in out cuenta_type, cantidad float) as
+  begin
+    SELF.saldo := SELF.saldo + cantidad;
+  end ingresa;
+
+  member procedure retira(self in out cuenta_type, cantidad float) as
+  begin
+    ingresa(-cantidad);
+  end retira;
+
+  member procedure transferencia(self in out cuenta_type, otra IN OUT cuenta_type, cantidad float) as
+  begin
+    SELF.retira(cantidad);
+    otra.ingresa(cantidad);
+    NULL;
+  end transferencia;
+
+  constructor function cuenta_type(id int) return self as result as
+  begin
+    -- TAREA: Se necesita implantación para FUNCTION CUENTA_TYPE.cuenta_type
+    return null;
+  end cuenta_type;
+
+  constructor function cuenta_type(id int, saldo float) return self as result as
+  begin
+    -- TAREA: Se necesita implantación para FUNCTION CUENTA_TYPE.cuenta_type
+    return null;
+  end cuenta_type;
 
 end;
 
@@ -394,140 +515,176 @@ end;
 --  DDL for Type PASSWORD_TYPE
 --------------------------------------------------------
 
-  CREATE OR REPLACE EDITIONABLE TYPE "C##MISCO"."PASSWORD_TYPE" as object 
+  CREATE OR REPLACE EDITIONABLE TYPE "C##MISCO"."PASSWORD_TYPE" AS OBJECT 
 ( 
-    
     -- atributo
-    contraseña VARCHAR2(50),
-    
+    contraseña VARCHAR2(50)
     -- métodos
-    MEMBER FUNCTION cuentaCaracteresNOEspeciales RETURN INT,
-    MEMBER FUNCTION esCaracterNoEspecial (caracter VARCHAR2) RETURN BOOLEAN,
-    MEMBER FUNCTION cuentaDigitos RETURN INT,
-    MEMBER FUNCTION esDigito(caracter VARCHAR2) RETURN BOOLEAN,
-    MEMBER FUNCTION cuentaCaracteresEspeciales RETURN INT,
-    MEMBER FUNCTION esCaracterEspecial (caracter VARCHAR2) RETURN BOOLEAN,
-    MEMBER FUNCTION generaCaracterNoEspecial RETURN VARCHAR2,
-    MEMBER FUNCTION generaCaracterDigito RETURN VARCHAR2,
-    MEMBER FUNCTION generaCaracterEspecial RETURN VARCHAR2,
-    MAP MEMBER FUNCTION esSegura RETURN FLOAT,
-    STATIC FUNCTION generador RETURN VARCHAR2,
-    CONSTRUCTOR FUNCTION password_type(contraseña VARCHAR2) RETURN SELF AS RESULT
-    
+    ,MEMBER FUNCTION cuentaCaracteresNoEspeciales RETURN INT
+    ,STATIC FUNCTION esCaracterNoEspecial(caracter VARCHAR2) RETURN BOOLEAN
+    ,MEMBER FUNCTION cuentaDígitos RETURN INT
+    ,STATIC FUNCTION esDígito(caracter VARCHAR2) RETURN BOOLEAN
+    ,MEMBER FUNCTION cuentaCaracteresEspeciales RETURN INT
+    ,STATIC FUNCTION esCaracterEspecial(caracter VARCHAR2) RETURN BOOLEAN
+    ,STATIC FUNCTION generaCaracterNoEspecial RETURN VARCHAR2
+    ,STATIC FUNCTION generaCaracterDígito RETURN VARCHAR2
+    ,STATIC FUNCTION generaCaracterEspecial RETURN VARCHAR2
+    ,MAP MEMBER FUNCTION esSEGURA RETURN FLOAT
+    ,STATIC FUNCTION generador RETURN VARCHAR2
+    ,CONSTRUCTOR FUNCTION Password_type (contraseña VARCHAR2)
+    RETURN SELF AS RESULT
 )
 /
-CREATE OR REPLACE EDITIONABLE TYPE BODY "C##MISCO"."PASSWORD_TYPE" as
+CREATE OR REPLACE EDITIONABLE TYPE BODY "C##MISCO"."PASSWORD_TYPE" AS
 
-  member function cuentacaracteresnoespeciales return int as
-    contador int := 0;
-    caracter VARCHAR2(50);
-  begin
-     FOR i IN 1..LENGTH(SELF.contraseña) LOOP
+  MEMBER FUNCTION cuentaCaracteresNoEspeciales RETURN INT AS
+  contador INT := 0;
+  caracter VARCHAR2(50);
+  BEGIN
+    FOR i IN 1..LENGTH(SELF.contraseña) LOOP
         caracter := SUBSTR(SELF.contraseña, i, 1);
-        if(escaracternoespecial(caracter)) THEN
+        IF (PASSWORD_TYPE.esCaracterNoEspecial(caracter)) THEN
             contador := contador+1;
         END IF;
-     END LOOP;
-  end cuentacaracteresnoespeciales;
+    END LOOP;
+    RETURN contador;
+  END cuentaCaracteresNoEspeciales;
 
-  member function escaracternoespecial (caracter varchar2) return boolean as
-  begin
-    -- mayus
+  STATIC FUNCTION esCaracterNoEspecial(caracter VARCHAR2) RETURN BOOLEAN AS
+  BEGIN
+    -- mayúsculas: ASCII de 65 a 90
     IF ASCII(caracter) BETWEEN 65 AND 90 THEN
         RETURN true;
     END IF;
-    
-    -- minus
-    IF (ASCII(caracter)>=97 AND ASCII(caracter)<= 122) THEN
+    -- minúsculas: ASCII de 97 a 122
+    IF ASCII(caracter)>=97 AND ASCII(caracter)<=122 THEN
         RETURN true;
     END IF;
-    return false;
-  end escaracternoespecial;
+    RETURN false;
+  END esCaracterNoEspecial;
 
-  member function cuentadigitos return int as
-    contador int := 0;
-    caracter VARCHAR2(50);
-  begin
-     FOR i IN 1..LENGTH(SELF.contraseña) LOOP
+  MEMBER FUNCTION cuentaDígitos RETURN INT AS
+  contador INT := 0;
+  caracter VARCHAR2(50);
+  BEGIN
+    FOR i IN 1..LENGTH(SELF.contraseña) LOOP
         caracter := SUBSTR(SELF.contraseña, i, 1);
-        if(esdigito(caracter)) THEN
+        IF (PASSWORD_TYPE.esDígito(caracter)) THEN
             contador := contador+1;
         END IF;
-     END LOOP;
-  end cuentadigitos;
+    END LOOP;
+    RETURN contador;
+  END cuentaDígitos;
 
-  member function esdigito(caracter varchar2) return boolean as
-  begin
-    -- digitos del 49 al 57
-    RETURN ASCII(caracter) >= 49 AND ASCII(caracter) <= 57;
-  end esdigito;
+  STATIC FUNCTION esDígito(caracter VARCHAR2) RETURN BOOLEAN AS
+  BEGIN
+    -- dígitos: del 48 al 57
+    RETURN ASCII(caracter)>=48 AND ASCII(caracter)<=57;
+  END esDígito;
 
-  member function cuentacaracteresespeciales return int as
-   contador int := 0;
-    caracter VARCHAR2(50);
-  begin
-     FOR i IN 1..LENGTH(SELF.contraseña) LOOP
+  MEMBER FUNCTION cuentaCaracteresEspeciales RETURN INT AS
+  contador INT := 0;
+  caracter VARCHAR2(50);
+  BEGIN
+    FOR i IN 1..LENGTH(SELF.contraseña) LOOP
         caracter := SUBSTR(SELF.contraseña, i, 1);
-        if(escaracterespecial(caracter)) THEN
+        IF (PASSWORD_TYPE.esCaracterEspecial(caracter)) THEN
             contador := contador+1;
         END IF;
-     END LOOP;
-  end cuentacaracteresespeciales;
+    END LOOP;
+    RETURN contador;
+  END cuentaCaracteresEspeciales;
 
-  member function escaracterespecial (caracter varchar2) return boolean as
-  begin
-    -- TAREA: Se necesita implantación para FUNCTION PASSWORD_TYPE.esCaracterEspecial
-    return NOT(escaracternoespecial(caracter)) AND NOT (esdigito(caracter));
-  end escaracterespecial;
+  STATIC FUNCTION esCaracterEspecial(caracter VARCHAR2) RETURN BOOLEAN AS
+  BEGIN
+    -- no NoEspecial y No dígito
+    RETURN NOT(esCaracterNoEspecial(caracter)) AND NOT(esDígito(caracter));
+  END esCaracterEspecial;
 
-  member function generacaracternoespecial return varchar2 as
-    posicion int;
-  begin
-    IF(TRUNC(DBMS_RANDOM.VALUE(1,2+1))=1) THEN
-        -- mayus
-        posicion := TRUNC(DBMS_RANDOM.VALUE(65, 90+1));
-    ELSE
-        -- minus
-        posicion := TRUNC(DBMS_RANDOM.VALUE(97, 122+1));
+  STATIC FUNCTION generaCaracterNoEspecial RETURN VARCHAR2 AS
+  posición INT; -- en la tabla ASCII
+  BEGIN
+    IF (TRUNC(DBMS_RANDOM.VALUE(1, 2+1))=1) THEN -- número aleatorio: 1 ó 2
+        --mayúscula
+        posición := TRUNC(DBMS_RANDOM.VALUE(65, 90+1)); -- 65 y 90
+    ELSE -- minúscula
+        posición := TRUNC(DBMS_RANDOM.VALUE(97, 122+1)); -- 97 y 122
     END IF;
-    return CHR(posicion); -- devuelve el caracter asociado
-  end generacaracternoespecial;
+    RETURN CHR(posición); -- devuelve el carácter asociado
+  END generaCaracterNoEspecial;
 
-  member function generacaracterdigito return varchar2 as
-    posicion INT := TRUNC(DBMS_RANDOM.VALUE(48, 57+1));
-  begin
-        RETURN CHR(posicion);
-    return null;
-  end generacaracterdigito;
+  STATIC FUNCTION generaCaracterDígito RETURN VARCHAR2 AS
+  posición INT := TRUNC(DBMS_RANDOM.VALUE(48, 57+1));
+  BEGIN
+    RETURN CHR(posición);
+  END generaCaracterDígito;
 
-  member function generacaracterespecial return varchar2 as
-    posicion int := TRUNC(DBMS_RANDOM.VALUE(1, 256+1));
-  begin
-        WHILE(NOT(escaracterespecial(ASCII(posicion)))) LOOP
-            posicion := TRUNC(DBMS_RANDOM.VALUE(1, 256+1));
-        END LOOP;
-    return null;
-  end generacaracterespecial;
+  STATIC FUNCTION generaCaracterEspecial RETURN VARCHAR2 AS
+  posición INT := TRUNC(DBMS_RANDOM.VALUE(1, 128+1));
+  BEGIN
+    -- mientras NO sea especial..
+    WHILE(NOT(esCaracterEspecial(CHR(posición)))) LOOP
+         posición := TRUNC(DBMS_RANDOM.VALUE(1, 128+1));
+    END LOOP;
+    RETURN CHR(posición);
+  END generaCaracterEspecial;
 
-  map member function essegura return float as
-  begin
-    -- TAREA: Se necesita implantación para FUNCTION PASSWORD_TYPE.esSegura
-    return null;
-  end essegura;
+  MAP MEMBER FUNCTION esSEGURA RETURN FLOAT AS
+    suma FLOAT := 0;
+  BEGIN
+    -- longitud de al menos 8 caracteres
+    IF (LENGTH(SELF.contraseña)<8) THEN
+        suma := suma + 10*LENGTH(SELF.contraseña)/8;
+    ELSE
+        suma := suma+10;
+    END IF;
+    IF (SELF.cuentaCaracteresEspeciales<3) THEN
+        suma := suma + 30*SELF.cuentaCaracteresEspeciales/3;
+    ELSE 
+        suma := suma + 30;
+    END IF;
+    IF (SELF.cuentaDígitos<4) THEN
+        suma := suma + 30*SELF.cuentaDígitos/4;
+    ELSE 
+        suma := suma + 30;
+    END IF;
+    IF (SELF.cuentaCaracteresNoEspeciales<2) THEN
+        suma := suma + 30*SELF.cuentaCaracteresNoEspeciales/2;
+    ELSE 
+        suma := suma + 30;
+    END IF;
+    RETURN suma;
+  END esSEGURA;
 
-  static function generador return varchar2 as
-  begin
-    -- TAREA: Se necesita implantación para FUNCTION PASSWORD_TYPE.generador
-    return null;
-  end generador;
+  STATIC FUNCTION generador RETURN VARCHAR2 AS
+    cadena VARCHAR2(50) := '';
+    longitud INT;
+    opc INT;
+  BEGIN
+    longitud := TRUNC(DBMS_RANDOM.VALUE(8, 15+1)); -- entre 8 y 15
+    -- bucle para meter longitud caracteres
+    FOR i IN 1..longitud LOOP
+        opc := TRUNC(DBMS_RANDOM.VALUE(1, 3+1)); -- hay 3 opciones
+        CASE opc
+        WHEN 1 THEN -- no especial
+            cadena := cadena || generaCaracterNoEspecial;
+        WHEN 2 THEN -- dígito
+            cadena := cadena || generaCaracterDígito;
+        ELSE -- especial
+            cadena := cadena || generaCaracterEspecial;
+        END CASE;
+    END LOOP;
+    RETURN cadena;
+  END generador;
 
-  constructor function password_type(contraseña varchar2) return self as result as
-  begin
+  CONSTRUCTOR FUNCTION Password_type (contraseña VARCHAR2)
+    RETURN SELF AS RESULT AS
+  BEGIN
     SELF.contraseña := contraseña;
-    return;
-  end password_type;
+    RETURN;
+  END Password_type;
 
-end;
+END;
 
 /
 --------------------------------------------------------
@@ -562,6 +719,50 @@ CREATE OR REPLACE EDITIONABLE TYPE BODY "C##MISCO"."SELECCIONADOR_TYPE" as
     SELF.opciones := vector;
     RETURN;
   end seleccionador_type;
+
+end;
+
+/
+--------------------------------------------------------
+--  DDL for Type SYSO
+--------------------------------------------------------
+
+  CREATE OR REPLACE EDITIONABLE TYPE "C##MISCO"."SYSO" as object 
+( 
+
+    mistu FLOAT, -- me fuerza a tener atributos
+    STATIC PROCEDURE printLn,
+    STATIC PROCEDURE printLn(texto VARCHAR2),
+    STATIC PROCEDURE printLn(numero NUMBER),
+    STATIC PROCEDURE printLn(bool BOOLEAN)
+    
+)
+/
+CREATE OR REPLACE EDITIONABLE TYPE BODY "C##MISCO"."SYSO" as
+
+  static procedure printLn AS
+  BEGIN
+    DBMS_OUTPUT.PUT_LINE('');
+  END;
+  
+  static procedure println(texto varchar2) as
+  begin
+    DBMS_OUTPUT.PUT_LINE(texto);
+  end println;
+
+  static procedure println(numero number) as
+  begin
+    DBMS_OUTPUT.PUT_LINE(numero);
+  end println;
+
+  static procedure println(bool boolean) as
+  begin
+    if (bool) THEN
+        DBMS_OUTPUT.PUT_LINE('true');
+    ELSE
+        DBMS_OUTPUT.PUT_LINE('false');
+    END IF;
+  end println;
 
 end;
 
