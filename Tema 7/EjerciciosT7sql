@@ -1,0 +1,11 @@
+DECLARE
+    c1 circulo_type_repaso := NEW circulo_type_repaso(33.0);
+    c2 circulo_type_repaso := NEW circulo_type_repaso(3.0, 'Verde');
+BEGIN
+    c1.color := 'rojo';
+    IF(c1 > c2) THEN
+        DBMS_OUTPUT.PUT_LINE('MAYOR C1');
+    ELSE
+        DBMS_OUTPUT.PUT_LINE('NO');
+    END IF;
+END;

@@ -1,5 +1,5 @@
 --------------------------------------------------------
--- Archivo creado  - lunes-mayo-20-2024   
+-- Archivo creado  - miércoles-mayo-22-2024   
 --------------------------------------------------------
 --------------------------------------------------------
 --  DDL for Type ATAQUE_TYPE
@@ -65,6 +65,7 @@ CREATE OR REPLACE EDITIONABLE TYPE BODY "C##MISCO"."ATAQUE_TYPE" as
 
 end;
 
+
 /
 --------------------------------------------------------
 --  DDL for Type BOLA_TYPE
@@ -94,31 +95,98 @@ CREATE OR REPLACE EDITIONABLE TYPE BODY "C##MISCO"."BOLA_TYPE" as
 
   member procedure muestra(self in out bola_type) as
   begin
-    -- TAREA: Se necesita implantación para PROCEDURE BOLA_TYPE.muestra
-    null;
+    DBMS_OUTPUT.PUT_LINE('Nombre: ' || SELF.nombre || ' velocidad: ' || SELF.velocidad);
   end muestra;
 
-  member procedure golpea(self in out bola_type, otro bola_type) as
+  member procedure golpea(self in out bola_type, otra IN OUT bola_type) as
   begin
-    -- TAREA: Se necesita implantación para PROCEDURE BOLA_TYPE.golpea
-    null;
+    DBMS_OUTPUT.PUT_LINE('Bola1  golpea a bola2');
+    DBMS_OUTPUT.PUT_LINE('Velocidad b1: ' || SELF.velocidad);
+    DBMS_OUTPUT.PUT_LINE('Velocidad b2: ' || otra.velocidad);
+    otra.velocidad := otra.velocidad + SELF.velocidad;
+    SELF.velocidad := 0;
   end golpea;
 
   constructor function bola_type(nombre varchar2, velocidad int)
     return self as result as
   begin
-    -- TAREA: Se necesita implantación para FUNCTION BOLA_TYPE.bola_type
-    return null;
+    SELF.nombre := nombre;
+    SELF.velocidad := velocidad;
+    return;
   end bola_type;
 
   constructor function bola_type(nombre varchar2)
     return self as result as
   begin
-    -- TAREA: Se necesita implantación para FUNCTION BOLA_TYPE.bola_type
-    return null;
+    SELF := NEW bola_type('bola que mola', 65);
+    RETURN;
   end bola_type;
 
 end;
+
+/
+--------------------------------------------------------
+--  DDL for Type BOLA_TYPE_REPASO
+--------------------------------------------------------
+
+  CREATE OR REPLACE EDITIONABLE TYPE "C##MISCO"."BOLA_TYPE_REPASO" AS OBJECT 
+( 
+
+    -- atributos
+    nombre VARCHAR2(100),
+    velocidad INT,
+    
+    -- métodos
+    MEMBER FUNCTION quieta RETURN BOOLEAN,
+    MEMBER PROCEDURE muestra(SELF IN OUT bola_type_repaso),
+    MEMBER PROCEDURE golpea(SELF IN OUT bola_type_repaso,
+        otra IN OUT bola_type_repaso),
+        
+    -- constructores
+    CONSTRUCTOR FUNCTION bola_type_repaso(nombre VARCHAR2, velocidad INT)
+        RETURN SELF AS RESULT,
+    CONSTRUCTOR FUNCTION bola_type_repaso(nombre VARCHAR2)
+        RETURN SELF AS RESULT
+)
+/
+CREATE OR REPLACE EDITIONABLE TYPE BODY "C##MISCO"."BOLA_TYPE_REPASO" AS
+
+  MEMBER FUNCTION quieta RETURN BOOLEAN AS
+  BEGIN
+    RETURN SELF.velocidad =0;
+  END quieta;
+
+  MEMBER PROCEDURE muestra(SELF IN OUT bola_type_repaso) AS
+  BEGIN
+    DBMS_OUTPUT.PUT_LINE('Nombre: ' || SELF.nombre || ' velocidad: ' || SELF.velocidad);
+  END muestra;
+
+  MEMBER PROCEDURE golpea(SELF IN OUT bola_type_repaso,
+        otra IN OUT bola_type_repaso) AS
+  BEGIN
+    DBMS_OUTPUT.PUT_LINE('Bola1  golpea a bola2');
+    DBMS_OUTPUT.PUT_LINE('Velocidad b1: ' || SELF.velocidad);
+    DBMS_OUTPUT.PUT_LINE('Velocidad b2: ' || otra.velocidad);
+    otra.velocidad := otra.velocidad + SELF.velocidad;
+    SELF.velocidad := 0;
+  END golpea;
+
+  CONSTRUCTOR FUNCTION bola_type_repaso(nombre VARCHAR2, velocidad INT)
+        RETURN SELF AS RESULT AS
+  BEGIN
+    SELF.nombre := nombre;
+    SELF.velocidad := velocidad;
+    return;
+  END bola_type_repaso;
+
+  CONSTRUCTOR FUNCTION bola_type_repaso(nombre VARCHAR2)
+        RETURN SELF AS RESULT AS
+  BEGIN
+    SELF := NEW bola_type_repaso('bola que mola', 65);
+    RETURN;
+  END bola_type_repaso;
+
+END;
 
 /
 --------------------------------------------------------
@@ -135,7 +203,8 @@ end;
     -- metodos
     MEMBER PROCEDURE muestra(SELF IN OUT cafetera_type),
     MEMBER PROCEDURE linea(SELF IN OUT cafetera_type),
-    MEMBER FUNCTION servirTaza RETURN INT,
+    MEMBER FUNCTION servirTaza(SELF IN OUT cafetera_type)
+        RETURN INT,
     
     -- constructores
     CONSTRUCTOR FUNCTION cafetera_type(maxima INT)
@@ -156,7 +225,7 @@ CREATE OR REPLACE EDITIONABLE TYPE BODY "C##MISCO"."CAFETERA_TYPE" as
     SELF.actual := SELF.maxima;
   end linea;
 
-  member function servirtaza return int as
+  member function servirtaza(SELF IN OUT cafetera_type) return int as
     cantidad INT := 0;
   begin
     IF (SELF.actual >= 0) THEN
@@ -171,18 +240,84 @@ CREATE OR REPLACE EDITIONABLE TYPE BODY "C##MISCO"."CAFETERA_TYPE" as
   constructor function cafetera_type(maxima int)
     return self as result as
   begin
-    -- TAREA: Se necesita implantación para FUNCTION CAFETERA_TYPE.cafetera_type
-    return null;
+    SELF.maxima := maxima;
+    SELF.actual :=  SELF.maxima;
+    RETURN;
   end cafetera_type;
 
   constructor function cafetera_type
     return self as result as
   begin
-    -- TAREA: Se necesita implantación para FUNCTION CAFETERA_TYPE.cafetera_type
-    return null;
+    SELF := NEW cafetera_type(1000);
+    RETURN;
   end cafetera_type;
 
 end;
+
+/
+--------------------------------------------------------
+--  DDL for Type CAFETERA_TYPE_REPASO
+--------------------------------------------------------
+
+  CREATE OR REPLACE EDITIONABLE TYPE "C##MISCO"."CAFETERA_TYPE_REPASO" AS OBJECT 
+( 
+
+    -- atributos
+    cantMax INT,
+    cantActual INT,
+    
+    -- métodos
+    MEMBER PROCEDURE muestra(SELF IN OUT cafetera_type_repaso),
+    MEMBER PROCEDURE llena(SELF IN OUT cafetera_type_repaso), 
+    MEMBER FUNCTION servirTaza(SELF IN OUT cafetera_type_repaso) RETURN INT,
+    
+    -- constructores
+    CONSTRUCTOR FUNCTION cafetera_type_repaso(cantMax INT)
+        RETURN SELF AS RESULT,
+    CONSTRUCTOR FUNCTION cafetera_type_repaso
+        RETURN SELF AS RESULT
+)
+/
+CREATE OR REPLACE EDITIONABLE TYPE BODY "C##MISCO"."CAFETERA_TYPE_REPASO" AS
+
+  MEMBER PROCEDURE muestra(SELF IN OUT cafetera_type_repaso) AS
+  BEGIN
+    DBMS_OUTPUT.PUT_LINE('Cantidad máxima: ' || SELF.cantMax || ' cantidad actual: ' || SELF.cantActual);
+  END muestra;
+
+  MEMBER PROCEDURE llena(SELF IN OUT cafetera_type_repaso) AS
+  BEGIN
+    SELF.cantActual := SELF.cantMax;
+  END llena;
+
+  MEMBER FUNCTION servirTaza(SELF IN OUT cafetera_type_repaso) RETURN INT AS
+    cantidad INT := 0;
+  BEGIN
+    IF (SELF.cantActual >= 0) THEN
+        cantidad := 30;
+    ELSE
+        cantidad := SELF.cantActual;
+    END IF;
+    SELF.cantActual := SELF.cantActual - cantidad;
+    RETURN cantidad;
+  END servirTaza;
+
+  CONSTRUCTOR FUNCTION cafetera_type_repaso(cantMax INT)
+        RETURN SELF AS RESULT AS
+  BEGIN
+    SELF.cantMax := cantMax;
+    SELF.cantActual :=  SELF.cantMax;
+    RETURN;
+  END cafetera_type_repaso;
+
+  CONSTRUCTOR FUNCTION cafetera_type_repaso
+        RETURN SELF AS RESULT AS
+  BEGIN
+    SELF := NEW cafetera_type_repaso(1000);
+    RETURN;
+  END cafetera_type_repaso;
+
+END;
 
 /
 --------------------------------------------------------
@@ -195,19 +330,19 @@ end;
     -- atributos
     radio FLOAT,
     color VARCHAR2(50),
-    
+
     -- function
     MEMBER FUNCTION longitud RETURN FLOAT,
     MEMBER FUNCTION área RETURN FLOAT,
     MEMBER PROCEDURE muestra(SELF círculo_type),
     MAP MEMBER FUNCTION getRadio RETURN FLOAT,
-    
+
     -- constructores
     CONSTRUCTOR FUNCTION círculo_type(radio FLOAT, color VARCHAR2)
         RETURN SELF AS RESULT,
     CONSTRUCTOR FUNCTION círculo_type(radio FLOAT)
         RETURN SELF AS RESULT
-    
+
 )
 /
 CREATE OR REPLACE EDITIONABLE TYPE BODY "C##MISCO"."CÍRCULO_TYPE" as
@@ -249,6 +384,70 @@ CREATE OR REPLACE EDITIONABLE TYPE BODY "C##MISCO"."CÍRCULO_TYPE" as
 
 end;
 
+
+/
+--------------------------------------------------------
+--  DDL for Type CIRCULO_TYPE_REPASO
+--------------------------------------------------------
+
+  CREATE OR REPLACE EDITIONABLE TYPE "C##MISCO"."CIRCULO_TYPE_REPASO" AS OBJECT 
+( 
+
+    -- atributos
+    radio FLOAT,
+    color VARCHAR2(50),
+    
+    -- métodos
+    MEMBER FUNCTION longitud RETURN FLOAT,
+    MEMBER FUNCTION area RETURN FLOAT,
+    MEMBER PROCEDURE muestra(SELF circulo_type_repaso),
+    MAP MEMBER FUNCTION getRadio RETURN FLOAT,
+    
+    -- constructores
+    CONSTRUCTOR FUNCTION circulo_type_repaso(radio FLOAT) 
+        RETURN SELF AS RESULT,
+    CONSTRUCTOR FUNCTION circulo_type_repaso(radio FLOAT, color VARCHAR)
+        RETURN SELF AS RESULT
+)
+/
+CREATE OR REPLACE EDITIONABLE TYPE BODY "C##MISCO"."CIRCULO_TYPE_REPASO" AS
+
+  MEMBER FUNCTION longitud RETURN FLOAT AS
+  BEGIN
+    RETURN 2*3.14*SELF.radio;
+  END longitud;
+
+  MEMBER FUNCTION area RETURN FLOAT AS
+  BEGIN
+    RETURN 3.14*POWER(SELF.radio,2);
+  END area;
+
+  MEMBER PROCEDURE muestra(SELF circulo_type_repaso) AS
+  BEGIN
+    DBMS_OUTPUT.PUT_LINE('Circulo de radio: ' || SELF.radio || ' y de color: ' || SELF.color);
+  END muestra;
+
+  MAP MEMBER FUNCTION getRadio RETURN FLOAT AS
+  BEGIN
+    RETURN SELF.radio;
+  END getRadio;
+
+  CONSTRUCTOR FUNCTION circulo_type_repaso(radio FLOAT) 
+        RETURN SELF AS RESULT AS
+  BEGIN
+    SELF := NEW circulo_type_repaso(radio, 'Azul');
+  END circulo_type_repaso;
+
+  CONSTRUCTOR FUNCTION circulo_type_repaso(radio FLOAT, color VARCHAR)
+        RETURN SELF AS RESULT AS
+  BEGIN
+    SELF.radio := radio;
+    SELF.color := color;
+    RETURN;
+  END circulo_type_repaso;
+
+END;
+
 /
 --------------------------------------------------------
 --  DDL for Type CUENTA_TYPE
@@ -263,48 +462,124 @@ end;
     MEMBER PROCEDURE muestra(SELF IN OUT cuenta_type),
     MEMBER PROCEDURE ingresa(SELF IN OUT cuenta_type, cantidad FLOAT),
     MEMBER PROCEDURE retira(SELF IN OUT cuenta_type, cantidad FLOAT),
-    MEMBER PROCEDURE transferencia(SELF IN OUT cuenta_Type, otra cuenta_type, cantidad FLOAT),
+    MEMBER PROCEDURE transferencia(SELF IN OUT cuenta_type, otra IN OUT cuenta_type, cantidad FLOAT),
     CONSTRUCTOR FUNCTION cuenta_type(id INT) RETURN SELF AS RESULT,
     CONSTRUCTOR FUNCTION cuenta_type(id INT, saldo FLOAT) RETURN SELF AS RESULT
 )
 /
-CREATE OR REPLACE EDITIONABLE TYPE BODY "C##MISCO"."CUENTA_TYPE" as
+CREATE OR REPLACE EDITIONABLE TYPE BODY "C##MISCO"."CUENTA_TYPE" AS
 
-  member procedure muestra(self in out cuenta_type) as
-  begin
-    SYSO.println('' || SELF.id || ' con ' || SELF.saldo || '€');
-  end muestra;
+  MEMBER PROCEDURE muestra(SELF IN OUT Cuenta_type) AS
+  BEGIN
+    SYSO.println('' || SELF.id || ' con ' || SELF.saldo || ' €.');
+  END muestra;
 
-  member procedure ingresa(self in out cuenta_type, cantidad float) as
-  begin
+  MEMBER PROCEDURE ingresa(SELF IN OUT cuenta_type, cantidad FLOAT) AS
+  BEGIN
     SELF.saldo := SELF.saldo + cantidad;
-  end ingresa;
+  END ingresa;
 
-  member procedure retira(self in out cuenta_type, cantidad float) as
-  begin
+  MEMBER PROCEDURE retira(SELF IN OUT Cuenta_type, cantidad FLOAT) AS
+  BEGIN
     ingresa(-cantidad);
-  end retira;
+  END retira;
 
-  member procedure transferencia(self in out cuenta_type, otra IN OUT cuenta_type, cantidad float) as
-  begin
+  MEMBER PROCEDURE transferencia(SELF IN OUT cuenta_type, 
+       otra IN OUT cuenta_type, cantidad FLOAT) AS
+  BEGIN
     SELF.retira(cantidad);
     otra.ingresa(cantidad);
     NULL;
-  end transferencia;
+  END transferencia;
 
-  constructor function cuenta_type(id int) return self as result as
-  begin
-    -- TAREA: Se necesita implantación para FUNCTION CUENTA_TYPE.cuenta_type
-    return null;
-  end cuenta_type;
+  CONSTRUCTOR FUNCTION Cuenta_type(id INT)
+    RETURN SELF AS RESULT AS
+  BEGIN
+    SELF := new Cuenta_type(id, 0);
+    RETURN;
+  END Cuenta_type;
 
-  constructor function cuenta_type(id int, saldo float) return self as result as
-  begin
-    -- TAREA: Se necesita implantación para FUNCTION CUENTA_TYPE.cuenta_type
-    return null;
-  end cuenta_type;
+  CONSTRUCTOR FUNCTION Cuenta_type(id INT, saldo FLOAT)
+    RETURN SELF AS RESULT AS
+  BEGIN
+    SELF.id := id;
+    SELF.saldo := saldo;
+    RETURN;
+  END Cuenta_type;
 
-end;
+END;
+
+/
+--------------------------------------------------------
+--  DDL for Type CUENTA_TYPE_REPASO
+--------------------------------------------------------
+
+  CREATE OR REPLACE EDITIONABLE TYPE "C##MISCO"."CUENTA_TYPE_REPASO" AS OBJECT 
+( 
+
+    -- atributos
+    identificador INT,
+    saldo FLOAT,
+    
+    -- métodos
+    MEMBER PROCEDURE muestra(SELF IN OUT cuenta_type_repaso),
+    MEMBER PROCEDURE ingresa(SELF IN OUT cuenta_type_repaso, cantidad FLOAT),
+    MEMBER PROCEDURE retira(SELF IN OUT cuenta_type_repaso, cantidad FLOAT),
+    MEMBER PROCEDURE transferencia(
+        SELF IN OUT cuenta_type_repaso, 
+        otra IN OUT cuenta_type_repaso,
+        cantidad FLOAT),
+    
+    -- constructores
+    CONSTRUCTOR FUNCTION cuenta_type_repaso(identificador INT)
+        RETURN SELF AS RESULT,
+    CONSTRUCTOR FUNCTION cuenta_type_repaso(identificador INT, saldo FLOAT)
+        RETURN SELF AS RESULT
+    
+)
+/
+CREATE OR REPLACE EDITIONABLE TYPE BODY "C##MISCO"."CUENTA_TYPE_REPASO" AS
+
+  MEMBER PROCEDURE muestra(SELF IN OUT cuenta_type_repaso) AS
+  BEGIN
+    DBMS_OUTPUT.PUT_LINE('ID: ' || SELF.identificador || ' saldo: ' || SELF.saldo);
+  END muestra;
+
+  MEMBER PROCEDURE ingresa(SELF IN OUT cuenta_type_repaso, cantidad FLOAT) AS
+  BEGIN
+    SELF.saldo := SELF.saldo + cantidad;
+  END ingresa;
+
+  MEMBER PROCEDURE retira(SELF IN OUT cuenta_type_repaso, cantidad FLOAT) AS
+  BEGIN
+    SELF.saldo := SELF.saldo - cantidad;
+  END retira;
+
+  MEMBER PROCEDURE transferencia(
+        SELF IN OUT cuenta_type_repaso, 
+        otra IN OUT cuenta_type_repaso,
+        cantidad FLOAT) AS
+  BEGIN
+    SELF.retira(cantidad);
+    otra.ingresa(cantidad);
+  END transferencia;
+
+  CONSTRUCTOR FUNCTION cuenta_type_repaso(identificador INT)
+        RETURN SELF AS RESULT AS
+  BEGIN
+    SELF := NEW cuenta_type_repaso(identificador, 0);
+    RETURN;
+  END cuenta_type_repaso;
+
+  CONSTRUCTOR FUNCTION cuenta_type_repaso(identificador INT, saldo FLOAT)
+        RETURN SELF AS RESULT AS
+  BEGIN
+    SELF.identificador := identificador;
+    SELF.saldo := saldo;
+    RETURN;
+  END cuenta_type_repaso;
+
+END;
 
 /
 --------------------------------------------------------
@@ -411,6 +686,7 @@ CREATE OR REPLACE EDITIONABLE TYPE BODY "C##MISCO"."GALLETA_TYPE" AS
 
 END;
 
+
 /
 --------------------------------------------------------
 --  DDL for Type INSTANTE_TYPE
@@ -447,14 +723,15 @@ CREATE OR REPLACE EDITIONABLE TYPE BODY "C##MISCO"."INSTANTE_TYPE" as
   end muestra;
 
   member procedure sumasegs(self in out instante_type, segundos int) as
-  totales INT := SELF.segsdesdemedian+segundos;
-  horas int := 0;
-  minuto int := 0;
-  seg int := 0;
+    totales INT := SELF.segundos +segundos;
+    horas int := 0;
+    minuto int := 0;
+    seg int := 0;
+    resto FLOAT := 0;
   begin
     SELF.horas := TRUNC(totales/1600,0);
-    resto := MOD(TOTALES, 3600);
-    SELF.minutos = TRUNC(resto/60, 0);
+    resto := MOD(totales, 3600);
+    SELF.minutos := TRUNC(resto/60, 0);
     SELF.segundos := TRUNC(resto, 60);
     null;
   end sumasegs;
@@ -484,8 +761,10 @@ CREATE OR REPLACE EDITIONABLE TYPE BODY "C##MISCO"."INSTANTE_TYPE" as
 
   constructor function instante_type return self as result as
   begin
-    -- TAREA: Se necesita implantación para FUNCTION INSTANTE_TYPE.instante_type
-    return null;
+    SELF.horas := 00;
+    SELF.minutos := 00;
+    SELF.segundos := 00;
+    return;
   end instante_type;
 
   constructor function instante_type(horas int) return self as result as
@@ -509,6 +788,112 @@ CREATE OR REPLACE EDITIONABLE TYPE BODY "C##MISCO"."INSTANTE_TYPE" as
   end instante_type;
 
 end;
+
+/
+--------------------------------------------------------
+--  DDL for Type INSTANTE_TYPE_REPASO
+--------------------------------------------------------
+
+  CREATE OR REPLACE EDITIONABLE TYPE "C##MISCO"."INSTANTE_TYPE_REPASO" AS OBJECT 
+( 
+
+    -- atributos
+    horas INT,
+    minutos INT,
+    segundos INT,
+    
+    -- métodos
+    MEMBER PROCEDURE muestra(SELF IN OUT instante_type_repaso),
+    MEMBER PROCEDURE sumaSegs(SELF IN OUT instante_type_repaso, segundos INT),
+    MEMBER PROCEDURE sumaMins(SELF IN OUT instante_type_repaso, minutos INT),
+    MEMBER PROCEDURE sumaHors(SELF IN OUT instante_type_repaso, horas INT),
+    MEMBER FUNCTION segsDesdeMedia
+        RETURN INT,
+    ORDER MEMBER FUNCTION compara(SELF instante_type_repaso, 
+        otro instante_type_repaso)
+            RETURN INT,
+            
+    -- constructores
+    CONSTRUCTOR FUNCTION instante_type_repaso RETURN SELF AS RESULT,
+    CONSTRUCTOR FUNCTION instante_type_repaso(horas INT) RETURN SELF AS RESULT,
+    CONSTRUCTOR FUNCTION instante_type_repaso(horas INT, minutos INT) RETURN SELF AS RESULT,
+    CONSTRUCTOR FUNCTION instante_type_repaso(horas INT, minutos INT, segundos INT) RETURN SELF AS RESULT
+      
+)
+/
+CREATE OR REPLACE EDITIONABLE TYPE BODY "C##MISCO"."INSTANTE_TYPE_REPASO" AS
+
+  MEMBER PROCEDURE muestra(SELF IN OUT instante_type_repaso) AS
+  BEGIN
+    DBMS_OUTPUT.PUT_LINE('Horas: ' || SELF.horas || 'minutos: ' || SELF.minutos || 'segundos: ' || SELF.segundos);
+  END muestra;
+
+  MEMBER PROCEDURE sumaSegs(SELF IN OUT instante_type_repaso, segundos INT) AS
+  BEGIN
+    -- TAREA: Se necesita implantación para PROCEDURE INSTANTE_TYPE_REPASO.sumaSegs
+    NULL;
+  END sumaSegs;
+
+  MEMBER PROCEDURE sumaMins(SELF IN OUT instante_type_repaso, minutos INT) AS
+  BEGIN
+    -- TAREA: Se necesita implantación para PROCEDURE INSTANTE_TYPE_REPASO.sumaMins
+    NULL;
+  END sumaMins;
+
+  MEMBER PROCEDURE sumaHors(SELF IN OUT instante_type_repaso, horas INT) AS
+  BEGIN
+    -- TAREA: Se necesita implantación para PROCEDURE INSTANTE_TYPE_REPASO.sumaHors
+    NULL;
+  END sumaHors;
+
+  MEMBER FUNCTION segsDesdeMedia
+        RETURN INT AS
+  BEGIN
+    -- TAREA: Se necesita implantación para FUNCTION INSTANTE_TYPE_REPASO.segsDesdeMedia
+    RETURN NULL;
+  END segsDesdeMedia;
+
+  ORDER MEMBER FUNCTION compara(SELF instante_type_repaso, 
+        otro instante_type_repaso)
+            RETURN INT AS
+  BEGIN
+    -- TAREA: Se necesita implantación para FUNCTION INSTANTE_TYPE_REPASO.compara
+    RETURN NULL;
+  END compara;
+
+  CONSTRUCTOR FUNCTION instante_type_repaso RETURN SELF AS RESULT AS
+  BEGIN
+    SELF.horas := 00;
+    SELF.minutos := 00;
+    SELF.segundos := 00;
+    RETURN;
+  END instante_type_repaso;
+
+  CONSTRUCTOR FUNCTION instante_type_repaso(horas INT) RETURN SELF AS RESULT AS
+  BEGIN
+    SELF.horas := horas;
+    SELF.minutos := 0;
+    SELF.segundos := 0;
+    RETURN;
+  END instante_type_repaso;
+
+  CONSTRUCTOR FUNCTION instante_type_repaso(horas INT, minutos INT) RETURN SELF AS RESULT AS
+  BEGIN
+    SELF.horas := horas;
+    SELF.minutos := minutos;
+    SELF.segundos := 0;
+    RETURN;
+  END instante_type_repaso;
+
+  CONSTRUCTOR FUNCTION instante_type_repaso(horas INT, minutos INT, segundos INT) RETURN SELF AS RESULT AS
+  BEGIN
+    SELF.horas := horas;
+    SELF.minutos := minutos;
+    SELF.segundos := segundos;
+    RETURN;
+  END instante_type_repaso;
+
+END;
 
 /
 --------------------------------------------------------
@@ -688,6 +1073,29 @@ END;
 
 /
 --------------------------------------------------------
+--  DDL for Type PASSWORD_TYPE_REPASO
+--------------------------------------------------------
+
+  CREATE OR REPLACE EDITIONABLE TYPE "C##MISCO"."PASSWORD_TYPE_REPASO" AS OBJECT 
+( 
+
+    -- atributos
+    contraseña VARCHAR2(50),
+    
+    -- métodos
+    MEMBER FUNCTION cuenCarNoEsp RETURN INT,
+    MEMBER FUNCTION cuenDig RETURN INT,
+    MEMBER FUNCTION cuenCarEsp RETURN INT,
+    MAP MEMBER FUNCTION esSer RETURN FLOAT,
+    STATIC FUNCTION generador RETURN VARCHAR2,
+    
+    -- constructores
+    CONSTRUCTOR FUNCTION password_type_repaso
+        (contraseña VARCHAR2) RETURN SELF AS RESULT 
+)
+
+/
+--------------------------------------------------------
 --  DDL for Type SELECCIONADOR_TYPE
 --------------------------------------------------------
 
@@ -722,6 +1130,45 @@ CREATE OR REPLACE EDITIONABLE TYPE BODY "C##MISCO"."SELECCIONADOR_TYPE" as
 
 end;
 
+
+/
+--------------------------------------------------------
+--  DDL for Type SELECCIONADOR_TYPE_REPASO
+--------------------------------------------------------
+
+  CREATE OR REPLACE EDITIONABLE TYPE "C##MISCO"."SELECCIONADOR_TYPE_REPASO" AS OBJECT 
+( 
+
+    -- atributos
+    opciones v_varchar,
+    
+    -- métodos
+    MEMBER FUNCTION respuesta RETURN VARCHAR2,
+    
+    -- constructores
+    CONSTRUCTOR FUNCTION seleccionador_type_repaso(opciones v_varchar)
+        RETURN SELF AS RESULT
+)
+/
+CREATE OR REPLACE EDITIONABLE TYPE BODY "C##MISCO"."SELECCIONADOR_TYPE_REPASO" AS
+
+  MEMBER FUNCTION respuesta RETURN VARCHAR2 AS
+    posicion INT;
+  BEGIN
+    -- elementos de 1 a count
+    posicion := TRUNC(DBMS_RANDOM.VALUE(1, SELF.opciones.COUNT()+1));
+    RETURN SELF.opciones(posicion);
+  END respuesta;
+
+  CONSTRUCTOR FUNCTION seleccionador_type_repaso(opciones v_varchar)
+        RETURN SELF AS RESULT AS
+  BEGIN
+    SELF.opciones := opciones;
+    RETURN;
+  END seleccionador_type_repaso;
+
+END;
+
 /
 --------------------------------------------------------
 --  DDL for Type SYSO
@@ -744,7 +1191,7 @@ CREATE OR REPLACE EDITIONABLE TYPE BODY "C##MISCO"."SYSO" as
   BEGIN
     DBMS_OUTPUT.PUT_LINE('');
   END;
-  
+
   static procedure println(texto varchar2) as
   begin
     DBMS_OUTPUT.PUT_LINE(texto);
@@ -766,6 +1213,7 @@ CREATE OR REPLACE EDITIONABLE TYPE BODY "C##MISCO"."SYSO" as
 
 end;
 
+
 /
 --------------------------------------------------------
 --  DDL for Type VEHICULOS
@@ -774,6 +1222,7 @@ end;
   CREATE OR REPLACE EDITIONABLE TYPE "C##MISCO"."VEHICULOS" 
 as varray(2) of vehiculo_type;
 
+
 /
 --------------------------------------------------------
 --  DDL for Type VEHICULOS_VARRAY
@@ -781,6 +1230,7 @@ as varray(2) of vehiculo_type;
 
   CREATE OR REPLACE EDITIONABLE TYPE "C##MISCO"."VEHICULOS_VARRAY" 
 as varray(2) of vehiculo_type;
+
 
 /
 --------------------------------------------------------
@@ -831,12 +1281,67 @@ CREATE OR REPLACE EDITIONABLE TYPE BODY "C##MISCO"."VEHICULO_TYPE" as
 
 end;
 
+
+/
+--------------------------------------------------------
+--  DDL for Type VEHICULO_TYPE_REPASO
+--------------------------------------------------------
+
+  CREATE OR REPLACE EDITIONABLE TYPE "C##MISCO"."VEHICULO_TYPE_REPASO" AS OBJECT 
+( 
+
+    -- atributos
+    velocidad NUMBER(4,1),
+    matricula VARCHAR2(10),
+    
+    -- métodos
+    MEMBER PROCEDURE acelera(SELF IN OUT vehiculo_type_repaso, incremento FLOAT),
+    MEMBER PROCEDURE frena(SELF IN OUT vehiculo_type_repaso, decremento FLOAT),
+    ORDER MEMBER FUNCTION compara(SELF IN OUT vehiculo_type_repaso, otro vehiculo_type_repaso)
+        RETURN INT,
+    
+    -- constructores
+    CONSTRUCTOR FUNCTION vehiculo_type_repaso(matricula VARCHAR2)
+        RETURN SELF AS RESULT
+)
+/
+CREATE OR REPLACE EDITIONABLE TYPE BODY "C##MISCO"."VEHICULO_TYPE_REPASO" AS
+
+  MEMBER PROCEDURE acelera(SELF IN OUT vehiculo_type_repaso, incremento FLOAT) AS
+  BEGIN
+    SELF.velocidad := SELF.velocidad + incremento;
+    DBMS_OUTPUT.PUT_LINE('La nueva velocidad es: ' || SELF.velocidad);
+  END acelera;
+
+  MEMBER PROCEDURE frena(SELF IN OUT vehiculo_type_repaso, decremento FLOAT) AS
+  BEGIN
+    SELF.velocidad := SELF.velocidad - decremento;
+    DBMS_OUTPUT.PUT_LINE('La nueva velocidad es: ' || SELF.velocidad);
+  END frena;
+
+  ORDER MEMBER FUNCTION compara(SELF IN OUT vehiculo_type_repaso, otro vehiculo_type_repaso)
+        RETURN INT AS
+  BEGIN
+    RETURN (SELF.velocidad-otro.velocidad)*10;
+  END compara;
+
+  CONSTRUCTOR FUNCTION vehiculo_type_repaso(matricula VARCHAR2)
+        RETURN SELF AS RESULT AS
+  BEGIN
+    SELF.matricula := matricula;
+    SELF.velocidad := 0;
+    RETURN;
+  END vehiculo_type_repaso;
+
+END;
+
 /
 --------------------------------------------------------
 --  DDL for Type V_VARCHAR
 --------------------------------------------------------
 
   CREATE OR REPLACE EDITIONABLE TYPE "C##MISCO"."V_VARCHAR" IS VARRAY(50) OF VARCHAR2(50);
+
 
 /
 --------------------------------------------------------
@@ -879,11 +1384,18 @@ REM INSERTING into C##MISCO.CIRCULO_TABLE
 SET DEFINE OFF;
 Insert into C##MISCO.CIRCULO_TABLE (RADIO,COLOR) values ('5','Azul');
 Insert into C##MISCO.CIRCULO_TABLE (RADIO,COLOR) values ('2','Azul');
+Insert into C##MISCO.CIRCULO_TABLE (RADIO,COLOR) values ('5','Azul');
+Insert into C##MISCO.CIRCULO_TABLE (RADIO,COLOR) values ('2','Azul');
+Insert into C##MISCO.CIRCULO_TABLE (RADIO,COLOR) values ('5','Azul');
+Insert into C##MISCO.CIRCULO_TABLE (RADIO,COLOR) values ('2','Azul');
+Insert into C##MISCO.CIRCULO_TABLE (RADIO,COLOR) values ('5','Azul');
+Insert into C##MISCO.CIRCULO_TABLE (RADIO,COLOR) values ('2','Azul');
+Insert into C##MISCO.CIRCULO_TABLE (RADIO,COLOR) values ('5','Azul');
+Insert into C##MISCO.CIRCULO_TABLE (RADIO,COLOR) values ('2','Azul');
+Insert into C##MISCO.CIRCULO_TABLE (RADIO,COLOR) values ('5','Azul');
+Insert into C##MISCO.CIRCULO_TABLE (RADIO,COLOR) values ('2','Azul');
 REM INSERTING into C##MISCO.TARRO
 SET DEFINE OFF;
-Insert into C##MISCO.TARRO (ID,GALLETA_CAMPO) values ('1',C##MISCO.GALLETA_TYPE('galletas de espleta', 10, 0, 0));
-Insert into C##MISCO.TARRO (ID,GALLETA_CAMPO) values ('2',C##MISCO.GALLETA_TYPE('Galletas de canarios', 20, 5, 0));
-Insert into C##MISCO.TARRO (ID,GALLETA_CAMPO) values ('3',C##MISCO.GALLETA_TYPE('Galletas pastosas', 15, 3, 0));
 --------------------------------------------------------
 --  Constraints for Table TARRO
 --------------------------------------------------------
@@ -894,7 +1406,7 @@ Insert into C##MISCO.TARRO (ID,GALLETA_CAMPO) values ('3',C##MISCO.GALLETA_TYPE(
 --------------------------------------------------------
 
   ALTER TABLE "C##MISCO"."CIRCULO_TABLE" ADD UNIQUE ("SYS_NC_OID$") RELY
-  USING INDEX PCTFREE 10 INITRANS 2 MAXTRANS 255 
+  USING INDEX PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
   STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
   PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
   BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
